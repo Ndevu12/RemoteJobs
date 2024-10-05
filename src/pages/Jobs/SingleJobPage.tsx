@@ -1,24 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import transformTime from "../../utils/FormatTime";
 import Button2 from "../../components/Buttons/Button2";
 import Button from "../../components/Buttons/Button";
 import { PropagateLoader } from "react-spinners";
-import { dummyJobData } from "../../../DummyData/detailedJob"; // Correct import
-
-interface SingleJobPageProps {
-  setAuthPage: (show: boolean) => void;
-}
+import { dummyJobData } from "../../../DummyData/detailedJob";
 
 const API_BASE_URL = (import.meta as any).env.VITE_REACT_APP_API_BASE_URL;
 
-const SingleJobPage: React.FC<SingleJobPageProps> = ({ setAuthPage }) => {
+const SingleJobPage: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();
   const [jobData, setJobData] = useState<any>(null);
   const [applyText, setApplyText] = useState("Apply Now");
   const [btnDisable, setBtnDisable] = useState(true);
   const [btnLoading, setBtnLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchJobData = async () => {
@@ -81,7 +78,7 @@ const SingleJobPage: React.FC<SingleJobPageProps> = ({ setAuthPage }) => {
     const token = localStorage.getItem("token");
     if (!token) {
       toast.info("Login is required");
-      setAuthPage(false);
+      navigate('/auth?type=login');
       return;
     }
     try {
@@ -96,10 +93,18 @@ const SingleJobPage: React.FC<SingleJobPageProps> = ({ setAuthPage }) => {
         toast.success("Successfully applied for the job");
         setApplyText("Applied");
       } else {
-        toast.error("Failed to apply for the job");
+        throw new Error("Failed to apply for the job");
       }
     } catch (error) {
-      toast.error("Something went wrong, Try again!");
+      // Check if the user has already applied in the dummy data
+      const account = JSON.parse(localStorage.getItem("account") || "{}");
+      const hasApplied = dummyJobData.AppliedJobs.some((appliedJob: any) => appliedJob.userId === account.id);
+      if (hasApplied) {
+        toast.info("You have already applied for this job (dummy data check)");
+        setApplyText("Applied");
+      } else {
+        toast.error("Something went wrong, Try again!");
+      }
     }
   };
 
@@ -108,7 +113,7 @@ const SingleJobPage: React.FC<SingleJobPageProps> = ({ setAuthPage }) => {
   }
 
   return (
-    <div className="single-job-page mt-5 mb-7 p-6 border border-grey-700 rounded-lg shadow-lg mx-auto max-w-4xl">
+    <div className="bg-white mt-5 mb-7 p-6 border border-grey-700 rounded-lg shadow-lg mx-auto max-w-4xl">
       <div className="flex flex-col items-center justify-center mb-6">
         <figure
           style={{ backgroundColor: jobData.company.logoBackground }}
