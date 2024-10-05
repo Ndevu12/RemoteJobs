@@ -1,13 +1,9 @@
-import React, { useState, useEffect } from "react";
-import Button from "../Buttons/Button";
-import "../../styles/FilterForm.css";
-import { Search, MapPin, Filter } from 'lucide-react';
+import React from "react";
+import { Search } from 'lucide-react';
 
 interface Props {
   filterJobsForm: (formData: {
-    location?: string;
     title: string;
-    fulltime?: string;
   }) => void;
 }
 
@@ -22,70 +18,29 @@ const FilterForm = (props: Props) => {
       fulltime?: string;
     } = {
       title: `${formData.get("title")}`,
-      location: `${formData.get("location")}`,
-      fulltime: `${formData.get("fulltime")}`,
     };
 
     props.filterJobsForm(filterInputs);
     (event.target as HTMLFormElement).reset();
   };
 
-  const [width, setWidth] = useState(window.innerWidth);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWidth(window.innerWidth);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
   return (
-    <form onSubmit={onFilterSubmit} action="" className="filter">
-      <div className="filter__item category--filter">
-        <figure>
-          <Search />
-        </figure>
+    <form onSubmit={onFilterSubmit} className="w-[20%] flex flex-col md:flex-row items-center mr-4 gap-4 p-4 rounded-md">
+      <div className="flex items-center w-full md:w-2/3 bg-gray-100 p-2 rounded-md">
+        <Search className="text-gray-500 mr-2" />
         <input
           type="text"
           name="title"
-          className="filter__text"
-          placeholder={
-            width > 992
-              ? "Filter by title, companies, expertise..."
-              : "Filter by title..."
-          }
+          className="flex-grow bg-transparent border-none outline-none p-2"
+          placeholder="Filter by job title"
         />
       </div>
-      <div className="filter__separator"></div>
-      <div className="filter__item location--filter">
-        <figure>
-          <MapPin />
-        </figure>
-        <input
-          name="location"
-          type="text"
-          className="filter__text"
-          placeholder="Filter by location..."
-        />
+      <div className="flex items-center w-full md:w-1/3">
+        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md flex items-center justify-center">
+          <Search className="mr-2" />
+          Search
+        </button>
       </div>
-      <div className="filter__separator"></div>
-      <div className="filter__item filter--full-time">
-        <p className="filter__checkbox">
-          <input type="checkbox" name="fulltime" id="fulltime" />
-          <label htmlFor="fulltime">{width > 992 ? "Full Time Only" : "Full Time"}</label>
-          <span>{width > 992 ? "Full Time Only" : "Full Time"}</span>
-        </p>
-      </div>
-      <div className="filter__mobile">
-        <Filter />
-        <Search className="filter__search_btn" />
-      </div>
-      <Button className="filter__submit_btn" text="Search" />
     </form>
   );
 };

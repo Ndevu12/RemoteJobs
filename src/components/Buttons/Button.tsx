@@ -1,21 +1,24 @@
-import React from 'react'
-import { PulseLoader } from 'react-spinners'
+// src/components/Buttons/Button.tsx
+import React from "react";
 
-import '../../styles/Button.css'
-interface btn {
-    className: string;
-    text: string;
-    type?: string;
-    loading?: boolean;
-    disabled?: boolean
+interface ButtonProps {
+  className?: string;
+  text: string;
+  loading?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
 }
-const Button = (props: btn) => {
 
-    return <button className={'button first--btn ' + props.className} type='submit' disabled={props.disabled}>
-        {props.loading ? 
-        <PulseLoader color="#fff" margin={5} size={10} /> : props.text
-        }
-        </button>
-}
+const Button: React.FC<ButtonProps> = ({text, loading, disabled, onClick }) => {
+  return (
+    <button
+      className='bg-blue-400 p-3 rounded'
+      disabled={disabled}
+      onClick={onClick}
+    >
+      {loading ? "Loading..." : text}
+    </button>
+  );
+};
 
 export default Button;

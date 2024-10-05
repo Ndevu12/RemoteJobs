@@ -1,10 +1,22 @@
-import '../../styles/Button.css'
+import React from "react";
+
 interface btn {
-    className: string;
-    text: string;
+  className: string;
+  text: string;
+  loading?: boolean;
+  onClick?: () => void;
 }
-const Button2 = (props: btn) => {
-    return <button className={'button second--btn ' + props.className} type='submit'>{props.text}</button>
-}
+
+const Button2: React.FC<btn> = ({text, loading, onClick }) => {
+  return (
+    <button
+      className='p-3 rounded text-blue-700'
+      type="submit"
+      onClick={onClick}
+    >
+      {loading ? "Loading..." : text}
+    </button>
+  );
+};
 
 export default Button2;

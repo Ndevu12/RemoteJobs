@@ -4,9 +4,6 @@ import React, { useState } from "react";
 import Button from "../../Buttons/Button";
 import Notification from "../../Notification/Notification";
 
-import "../../../styles/Login.css";
-import "../../../styles/Signup.css";
-
 const API_BASE_URL = (import.meta as any).env.VITE_REACT_APP_API_BASE_URL;
 
 interface propsType {

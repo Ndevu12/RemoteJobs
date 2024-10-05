@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import Button from "../../Buttons/Button";
 import Notification from "../../Notification/Notification";
 
-import "../../../styles/Postjob.css";
 import Button2 from "../../Buttons/Button2";
 
 interface propsType {

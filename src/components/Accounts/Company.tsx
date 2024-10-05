@@ -4,7 +4,6 @@ import Button from "../Buttons/Button";
 import Button2 from "../Buttons/Button2";
 import AccountJobs from "./Jobs/AccountJobs";
 
-import "../../styles/Company.css";
 import PostJob from "./Jobs/PostJob";
 
 interface Props {

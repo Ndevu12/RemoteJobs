@@ -1,4 +1,4 @@
-import '../../styles/Notification.css'
+
 
 interface Props {
     text: string
