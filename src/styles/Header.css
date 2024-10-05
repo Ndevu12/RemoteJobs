@@ -1,0 +1,117 @@
+.header {
+    background-image: url(../components/assets/desktop/bg-pattern-header.svg);
+    background-size: cover;
+    background-position: left bottom;
+    background-repeat: no-repeat;
+
+    height: 10.1rem;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding-inline: 9rem;
+}
+
+.header__title {
+    margin-top: -2rem;
+    cursor: pointer;
+}
+.header__title img {
+    cursor: pointer;
+}
+
+.header__left {
+    display: flex;
+    align-items: center;
+    column-gap: 3rem;
+    margin-top: -2rem;
+}
+
+.profile-photo {
+    width: 2.2rem;
+    height: 2.2rem;
+}
+.profile-photo img {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.profile-photo:hover {
+    filter: brightness(80%);
+}
+
+.header__actions {
+    display: flex;
+    column-gap: 1rem;
+}
+
+.light--dark-switch {
+    background-color: #fff;
+    width: 3rem;
+    height: 1.5rem;
+    border-radius: 0.75rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-inline: .45rem;
+    cursor: pointer;
+}
+
+.dark--on {
+    justify-content: flex-end;
+}
+
+.dark--on span {
+    animation: sliderRight .3s;
+}
+
+@keyframes sliderRight {
+    from {
+        transform: translateX(-1rem);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+
+.light--dark-switch span {
+    display: inline-block;
+    background-color: var(--violet);
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 50%;
+}
+
+.header__actions img {
+    vertical-align: middle;
+}
+
+@media only screen and (max-width: 1200px) {
+    .header {
+        padding-inline: 5rem;
+    }
+}
+@media only screen and (max-width: 992px) {
+    .header {
+        padding-inline: 3.5rem;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .header {
+        padding-inline: 2rem;
+    }
+}
+
+@media only screen and (max-width: 650px) {
+    .header {
+        background-image: url(../components/assets/desktop/bg-pattern-header.svg);
+        background-position: center bottom;
+        height: 8.5rem;
+        padding-inline: 1.5rem;
+    }
+}

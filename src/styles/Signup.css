@@ -1,0 +1,42 @@
+.signup-form {
+    background-color: var(--white);
+    width: 27rem;
+    margin-inline: auto;
+    padding: 2.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    row-gap: .5rem;
+    margin-top: -4rem;
+    box-shadow: .3rem .3rem 3rem -1rem black;
+    border-radius: .5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.signup-form span {
+    font-size: .7rem;
+    font-weight: 510;
+}
+
+.signup-form input {
+    padding: .5rem .5rem;
+    background-color: var(--light-grey);
+    outline: none;
+    border: none;
+    color: var(--very-dark-blue);
+}
+
+.signup-form input[type=file] {
+    font-size: .75rem;
+}
+
+.signup-form input[type=color] {
+    height: 2.5rem;
+    cursor: pointer;
+    width: 3rem;
+}
+.signup-form .sub--form-action {
+    font-size: .7rem;
+    letter-spacing: -.3px;
+    margin-block: .5rem;
+}

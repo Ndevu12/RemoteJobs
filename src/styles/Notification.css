@@ -1,0 +1,21 @@
+.notification-status {
+    position: fixed;
+    top: 2rem;
+    right: .5rem;
+    background-color: var(--light-grey);
+    padding: 1rem 2rem;
+    /* text-align: center; */
+    border-radius: .5rem;
+    animation: slideIn .5s ease-in-out;
+    font-weight: 600;
+    border: .5px solid var(--very-dark-blue);
+}
+
+@keyframes slideIn {
+    from{
+        right: -25rem;
+    }
+    to{
+        right: .5rem;
+    }
+}
