@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 import Button from "../../Buttons/Button";
 
-import "../../../styles/Login.css";
 import Notification from "../../Notification/Notification";
 
 interface propsType {

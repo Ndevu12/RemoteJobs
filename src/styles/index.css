@@ -1,34 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght,YOPQ@100..900,40..300&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  /* Primary Colors */
-  --violet: #5964e0;
-  --violet-opacity: rgba(89, 100, 224, 0.1);
-  --light-violet: #939BF4;
-  --light-violet-opacity: rgba(147, 155, 244, 0.35);
-  --very-dark-blue: #19202D;
-  --midnight: #121721;
+  font-family: 'Poppins', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
 
-  /* Secondary Colors */
-  --white: #e4dada;
-  --light-grey: #d7ebfd;
-  --gray: #9aa6b4;
-  --dark-grey: #6E8098;
+  /* color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87); */
+  background-color: #ffffff;
+  scroll-behavior: smooth;
+
+  font-synthesis: none;
 }
 
-.darkmode {
-  --white: #435b87;
-  --light-grey: var(--midnight);
-  --very-dark-blue: #8c8484;
+::-webkit-scrollbar {
+  width: 5px;
+  height: 7px;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+::-webkit-scrollbar-track {
+  background-color: #ffffff;
+  border-radius: 5px;
 }
 
-body {
-  font-family: "Kumbh Sans", sans-serif;
-  background-color: var(--light-grey);
+::-webkit-scrollbar-thumb {
+  background: #070f2b;
+  border-radius: 5px;
 }

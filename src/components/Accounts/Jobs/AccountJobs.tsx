@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 
-import "../../../styles/Jobs.css";
-
 import Notification from "../../Notification/Notification";
 import transformTime from "../../../utils/FormatTime";
 
