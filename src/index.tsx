@@ -4,6 +4,10 @@ import '../src/styles/index.css';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
 
+import Modal from 'react-modal';
+
+Modal.setAppElement('#root');
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );

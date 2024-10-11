@@ -9,11 +9,7 @@
 
   /* color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87); */
-<<<<<<< HEAD
-  background-color: #ffffff;
-=======
   background-color: #f4f4f6;
->>>>>>> b2c47b7 (ft<landing-page> designing landing page)
   scroll-behavior: smooth;
 
   font-synthesis: none;
@@ -32,15 +28,4 @@
 ::-webkit-scrollbar-thumb {
   background: #070f2b;
   border-radius: 5px;
-<<<<<<< HEAD
 }
-=======
-}
-
-/* /auth/signup */
-/* <Route
-path="/auth/signup"
-element={
-<Signup />}
-/> */
->>>>>>> b2c47b7 (ft<landing-page> designing landing page)

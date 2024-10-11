@@ -3,18 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Button from "../../Buttons/Button";
-<<<<<<< HEAD
-
-import Notification from "../../Notification/Notification";
-
-interface propsType {
-  signUpFormActive: () => void;
-  removeAuth: () => void;
-}
-=======
 import { generateToken } from "../../../utils/tokenUtils";
 import { useAuth } from "../../../context/AuthContext";
->>>>>>> b2c47b7 (ft<landing-page> designing landing page)
 
 interface FormData {
   email: string;

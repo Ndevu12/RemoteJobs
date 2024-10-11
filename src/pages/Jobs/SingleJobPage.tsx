@@ -6,6 +6,7 @@ import Button2 from "../../components/Buttons/Button2";
 import Button from "../../components/Buttons/Button";
 import { PropagateLoader } from "react-spinners";
 import { dummyJobData } from "../../../DummyData/detailedJob";
+import Modal from 'react-modal';
 
 const API_BASE_URL = (import.meta as any).env.VITE_REACT_APP_API_BASE_URL;
 
@@ -15,6 +16,8 @@ const SingleJobPage: React.FC = () => {
   const [applyText, setApplyText] = useState("Apply Now");
   const [btnDisable, setBtnDisable] = useState(true);
   const [btnLoading, setBtnLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -73,14 +76,19 @@ const SingleJobPage: React.FC = () => {
     }
   }, [jobData]);
 
-  const applyNowHandler = async () => {
-    toast.info("Button clicked.");
+  const applyNowHandler = () => {
     const token = localStorage.getItem("token");
     if (!token) {
       toast.info("Login is required");
       navigate('/auth?type=login');
       return;
     }
+    setIsModalOpen(true);
+  };
+
+  const handleUseProfileCV = async () => {
+    setIsModalOpen(false);
+    const token = localStorage.getItem("token");
     try {
       const response = await fetch(`${API_BASE_URL}/jobs/apply/${jobData.id}`, {
         method: "POST",
@@ -96,15 +104,45 @@ const SingleJobPage: React.FC = () => {
         throw new Error("Failed to apply for the job");
       }
     } catch (error) {
-      // Check if the user has already applied in the dummy data
-      const account = JSON.parse(localStorage.getItem("account") || "{}");
-      const hasApplied = dummyJobData.AppliedJobs.some((appliedJob: any) => appliedJob.userId === account.id);
-      if (hasApplied) {
-        toast.info("You have already applied for this job (dummy data check)");
+      toast.error("Something went wrong, Try again!");
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const handleUploadCV = async () => {
+    if (!selectedFile) {
+      toast.error("Please select a file to upload");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("cv", selectedFile);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/jobs/apply/${jobData.id}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        toast.success("Successfully applied for the job");
         setApplyText("Applied");
       } else {
-        toast.error("Something went wrong, Try again!");
+        throw new Error("Failed to apply for the job");
       }
+    } catch (error) {
+      toast.error("Something went wrong, Try again!");
+    } finally {
+      setIsModalOpen(false);
     }
   };
 
@@ -226,6 +264,35 @@ const SingleJobPage: React.FC = () => {
           onClick={applyNowHandler}
         />
       </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        contentLabel="Apply for Job"
+        className="fixed inset-0 flex items-center justify-center z-50"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-40"
+      >
+        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+          <h2 className="text-xl font-semibold mb-4">Apply for {jobData.position}</h2>
+          <p className="mb-4">Would you like to use your CV from your profile or upload a new CV?</p>
+          <div className="flex justify-between">
+            <Button2 text="Use Profile CV" onClick={handleUseProfileCV} className="mr-2" />
+            <Button2 text="Upload New CV" onClick={() => document.getElementById('file-upload')?.click()} className="ml-2" />
+          </div>
+          <input
+            type="file"
+            id="file-upload"
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+          />
+          {selectedFile && (
+            <div className="mt-4">
+              <p>Selected file: {selectedFile.name}</p>
+              <Button2 text="Upload CV and Apply" onClick={handleUploadCV} className="mt-2" />
+            </div>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 };
