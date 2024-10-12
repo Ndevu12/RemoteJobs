@@ -59,7 +59,7 @@ const JobsPage: React.FC<Props> = ({ filterData }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center mt-6">
+    <div className="flex flex-col items-center justify-center mt-6 ">
       <div className="jobs-page w-[80%] p-4">
         <div className="text-lg font-semibold mb-6">Recent Jobs</div>
         {loading ? (

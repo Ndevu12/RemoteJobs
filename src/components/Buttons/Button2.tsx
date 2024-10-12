@@ -1,7 +1,7 @@
 import React from "react";
 
 interface btn {
-  className: string;
+  className?: string;
   text: string;
   loading?: boolean;
   onClick?: () => void;

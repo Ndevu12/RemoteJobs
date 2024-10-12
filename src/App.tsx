@@ -1,71 +1,42 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Header from "./components/Header/Header";
-import JobsPage from "./pages/Jobs/JobsPage";
-import SingleJobPage from "./pages/Jobs/SingleJobPage";
-import Auth from "./components/Auth/Auth";
-import { useBackendAvailability } from "./Hooks/AppStatus/useBackendAvailability";
-import { useAuth } from "./Hooks/auth/useAuth";
-import { useJobView } from "./Hooks/jobs/useJobView";
-import Footer from "./components/Footer/Footer";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
+import JobsPage from './pages/Jobs/JobsPage';
+import SingleJobPage from './pages/Jobs/SingleJobPage';
+import Auth from './pages/Auth/Auth';
+import ProfilePage from './pages/profile/ProfilePage';
+import UserJobsPage from './pages/Jobs/userJobsPage';
+import SearchResultsPage from './pages/SearchResultsPage/SearchResultsPage';
 
-function App() {
-  const backendAvailable = useBackendAvailability();
-  const {
-    showAuthPage,
-  } = useAuth();
-  const { setJobView } = useJobView();
-
-  const handleFilterJobs = (filterData: { title?: string }) => {
-    // Handle job filtering logic here
-  };
-
-  const handleProfileClick = () => {
-    // Handle profile click logic here
-  };
-
-  const handleLogoClick = () => {
-    // Handle logo click logic here
-  };
-
-  if (!backendAvailable) {
-    return (
-      <div className="App">
-        <h1>Backend Server is Down</h1>
-        <p>Please try again later.</p>
-      </div>
-    );
-  }
+const App: React.FC = () => {
 
   return (
     <Router>
       <div className="App">
-        <Header
-          onFilterJobs={handleFilterJobs}
-          onProfileClick={handleProfileClick}
-          onLogoClick={handleLogoClick}
-        />
+        <Header />
         <Routes>
           <Route 
-          path="/" 
-          element={
-          <JobsPage />
-          } 
+            path="/" 
+            element={<JobsPage />} 
           />
-        
           <Route
             path="/job/:jobId"
-            element={<SingleJobPage setAuthPage={showAuthPage} />}
+            element={<SingleJobPage />}
           />
           <Route
             path="/auth"
-            element={<Auth removeAuth={() => showAuthPage(false)} />}
+            element={<Auth />}
           />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/user-jobs" element={<UserJobsPage />} />
+          <Route path="/search-results" element={<SearchResultsPage />} />
         </Routes>
+        <Footer />
         <Footer />
       </div>
     </Router>
   );
-}
+};
 
 export default App;

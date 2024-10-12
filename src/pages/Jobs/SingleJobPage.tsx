@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import transformTime from "../../utils/FormatTime";
 import Button2 from "../../components/Buttons/Button2";
 import Button from "../../components/Buttons/Button";
 import { PropagateLoader } from "react-spinners";
-import { dummyJobData } from "../../../DummyData/detailedJob"; // Correct import
-
-interface SingleJobPageProps {
-  setAuthPage: (show: boolean) => void;
-}
+import { dummyJobData } from "../../../DummyData/detailedJob";
+import Modal from 'react-modal';
 
 const API_BASE_URL = (import.meta as any).env.VITE_REACT_APP_API_BASE_URL;
 
-const SingleJobPage: React.FC<SingleJobPageProps> = ({ setAuthPage }) => {
+const SingleJobPage: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();
   const [jobData, setJobData] = useState<any>(null);
   const [applyText, setApplyText] = useState("Apply Now");
   const [btnDisable, setBtnDisable] = useState(true);
   const [btnLoading, setBtnLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchJobData = async () => {
@@ -76,14 +76,19 @@ const SingleJobPage: React.FC<SingleJobPageProps> = ({ setAuthPage }) => {
     }
   }, [jobData]);
 
-  const applyNowHandler = async () => {
-    toast.info("Button clicked.");
+  const applyNowHandler = () => {
     const token = localStorage.getItem("token");
     if (!token) {
       toast.info("Login is required");
-      setAuthPage(false);
+      navigate('/auth?type=login');
       return;
     }
+    setIsModalOpen(true);
+  };
+
+  const handleUseProfileCV = async () => {
+    setIsModalOpen(false);
+    const token = localStorage.getItem("token");
     try {
       const response = await fetch(`${API_BASE_URL}/jobs/apply/${jobData.id}`, {
         method: "POST",
@@ -96,10 +101,48 @@ const SingleJobPage: React.FC<SingleJobPageProps> = ({ setAuthPage }) => {
         toast.success("Successfully applied for the job");
         setApplyText("Applied");
       } else {
-        toast.error("Failed to apply for the job");
+        throw new Error("Failed to apply for the job");
       }
     } catch (error) {
       toast.error("Something went wrong, Try again!");
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const handleUploadCV = async () => {
+    if (!selectedFile) {
+      toast.error("Please select a file to upload");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("cv", selectedFile);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/jobs/apply/${jobData.id}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        toast.success("Successfully applied for the job");
+        setApplyText("Applied");
+      } else {
+        throw new Error("Failed to apply for the job");
+      }
+    } catch (error) {
+      toast.error("Something went wrong, Try again!");
+    } finally {
+      setIsModalOpen(false);
     }
   };
 
@@ -108,7 +151,7 @@ const SingleJobPage: React.FC<SingleJobPageProps> = ({ setAuthPage }) => {
   }
 
   return (
-    <div className="single-job-page mt-5 mb-7 p-6 border border-grey-700 rounded-lg shadow-lg mx-auto max-w-4xl">
+    <div className="bg-white mt-5 mb-7 p-6 border border-grey-700 rounded-lg shadow-lg mx-auto max-w-4xl">
       <div className="flex flex-col items-center justify-center mb-6">
         <figure
           style={{ backgroundColor: jobData.company.logoBackground }}
@@ -221,6 +264,35 @@ const SingleJobPage: React.FC<SingleJobPageProps> = ({ setAuthPage }) => {
           onClick={applyNowHandler}
         />
       </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        contentLabel="Apply for Job"
+        className="fixed inset-0 flex items-center justify-center z-50"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-40"
+      >
+        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+          <h2 className="text-xl font-semibold mb-4">Apply for {jobData.position}</h2>
+          <p className="mb-4">Would you like to use your CV from your profile or upload a new CV?</p>
+          <div className="flex justify-between">
+            <Button2 text="Use Profile CV" onClick={handleUseProfileCV} className="mr-2" />
+            <Button2 text="Upload New CV" onClick={() => document.getElementById('file-upload')?.click()} className="ml-2" />
+          </div>
+          <input
+            type="file"
+            id="file-upload"
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+          />
+          {selectedFile && (
+            <div className="mt-4">
+              <p>Selected file: {selectedFile.name}</p>
+              <Button2 text="Upload CV and Apply" onClick={handleUploadCV} className="mt-2" />
+            </div>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 };
