@@ -9,7 +9,7 @@ const API_BASE_URL = (import.meta as any).env.VITE_REACT_APP_API_BASE_URL;
 
 const UserJobsPage: React.FC = () => {
   const { isLoggedIn } = useAuth();
-  const [activeTab, setActiveTab] = useState('jobs');
+  const [activeTab, setActiveTab] = useState('postedJobs');
   const [jobs, setJobs] = useState<any[]>(UserDummyJobData);
   const [appliedJobs, setAppliedJobs] = useState<any[]>(UserDummyJobData.filter(job => job.AppliedJobs.length > 0));
   const [newJob, setNewJob] = useState({
@@ -97,7 +97,7 @@ const UserJobsPage: React.FC = () => {
         const response = await fetch(`${API_BASE_URL}/jobs`, {
           method: 'POST',
           headers: {
-            'Content-Type': '/json',
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(newJob),
@@ -132,16 +132,45 @@ const UserJobsPage: React.FC = () => {
     }
   };
 
+  const handleJobStatusChange = async (jobId: string, newStatus: string) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/jobs/${jobId}/status`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status: newStatus }),
+        });
+
+        if (response.ok) {
+          toast.success('Job status updated successfully');
+          setJobs(jobs.map(job => job.id === jobId ? { ...job, status: newStatus } : job));
+        } else {
+          toast.error('Failed to update job status');
+        }
+      } catch (error) {
+        toast.error('Something went wrong, Try again!');
+      }
+    }
+  };
+
+  const handleViewApplicants = (jobId: string) => {
+    navigate(`/jobs/${jobId}/applicants`);
+  };
+
   return (
     <div className="className='mt-7 mb-7 p-6 rounded-lg mx-auto max-w-4xl">
-      <h1 className="text-2xl font-bold mb-4">User Jobs</h1>
+      <h1 className="text-2xl font-bold mb-4">Jobs Page</h1>
       <div className="mb-8">
         <div className="flex space-x-4 mb-4">
           <button
-            className={`px-4 py-2 rounded ${activeTab === 'jobs' ? 'bg-blue-400 text-white' : 'bg-gray-200'}`}
-            onClick={() => setActiveTab('jobs')}
+            className={`px-4 py-2 rounded ${activeTab === 'postedJobs' ? 'bg-blue-400 text-white' : 'bg-gray-200'}`}
+            onClick={() => setActiveTab('postedJobs')}
           >
-            Jobs
+            Posted Jobs
           </button>
           <button
             className={`px-4 py-2 rounded ${activeTab === 'appliedJobs' ? 'bg-blue-400 text-white' : 'bg-gray-200'}`}
@@ -156,7 +185,7 @@ const UserJobsPage: React.FC = () => {
             Post New Job
           </button>
         </div>
-        {activeTab === 'jobs' && (
+        {activeTab === 'postedJobs' && (
           <div className='mt-5 mb-7 px-10 pt-5 border border-grey-700 rounded-lg mx-auto max-w-4xl'>
             <h2 className="text-xl font-bold mb-4">Jobs Statistics</h2>
             {jobs.length > 0 ? (
@@ -181,6 +210,12 @@ const UserJobsPage: React.FC = () => {
                       className="bg-blue-400 text-white px-4 py-2 rounded mt-2"
                     >
                       {job.status === 'open' ? 'Close Job' : 'Reopen Job'}
+                    </button>
+                    <button
+                      onClick={() => handleViewApplicants(job.id)}
+                      className="bg-green-400 text-white px-4 py-2 rounded mt-2 ml-2"
+                    >
+                      View Applicants
                     </button>
                   </li>
                 ))}

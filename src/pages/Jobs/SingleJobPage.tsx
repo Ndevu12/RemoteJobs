@@ -7,6 +7,7 @@ import Button from "../../components/Buttons/Button";
 import { PropagateLoader } from "react-spinners";
 import { dummyJobData } from "../../../DummyData/detailedJob";
 import Modal from 'react-modal';
+import { FiX } from 'react-icons/fi';
 
 const API_BASE_URL = (import.meta as any).env.VITE_REACT_APP_API_BASE_URL;
 
@@ -104,7 +105,12 @@ const SingleJobPage: React.FC = () => {
         throw new Error("Failed to apply for the job");
       }
     } catch (error) {
-      toast.error("Something went wrong, Try again!");
+      // Fallback to localStorage
+      const appliedJobs = JSON.parse(localStorage.getItem("appliedJobs") || "[]");
+      appliedJobs.push({ jobId: jobData.id, method: "profileCV" });
+      localStorage.setItem("appliedJobs", JSON.stringify(appliedJobs));
+      toast.success("Successfully applied for the job (stored locally)");
+      setApplyText("Applied");
     }
   };
 
@@ -140,7 +146,12 @@ const SingleJobPage: React.FC = () => {
         throw new Error("Failed to apply for the job");
       }
     } catch (error) {
-      toast.error("Something went wrong, Try again!");
+      // Fallback to localStorage
+      const appliedJobs = JSON.parse(localStorage.getItem("appliedJobs") || "[]");
+      appliedJobs.push({ jobId: jobData.id, method: "uploadedCV", fileName: selectedFile.name });
+      localStorage.setItem("appliedJobs", JSON.stringify(appliedJobs));
+      toast.success("Successfully applied for the job (stored locally)");
+      setApplyText("Applied");
     } finally {
       setIsModalOpen(false);
     }
@@ -268,11 +279,18 @@ const SingleJobPage: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
+        shouldCloseOnOverlayClick={true}
         contentLabel="Apply for Job"
         className="fixed inset-0 flex items-center justify-center z-50"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-40"
       >
-        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+        <div className="relative bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+          <button
+            onClick={() => setIsModalOpen(false)}
+            className="absolute bg-red-100 top-2 right-2 text-red-500 rounded hover:text-red-700"
+          >
+            <FiX size={24} />
+          </button>
           <h2 className="text-xl font-semibold mb-4">Apply for {jobData.position}</h2>
           <p className="mb-4">Would you like to use your CV from your profile or upload a new CV?</p>
           <div className="flex justify-between">

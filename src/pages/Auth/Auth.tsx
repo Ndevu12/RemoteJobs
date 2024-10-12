@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Signup from "../../components/Auth/Signup/Signup";
 import Login from "../../components/Auth/Login/Login";
+import { FiX } from "react-icons/fi";
 
 const Auth: React.FC = () => {
   const location = useLocation();
@@ -27,10 +28,9 @@ const Auth: React.FC = () => {
       <div className="relative bg-white p-8 rounded w-full max-w-md">
         <button
           onClick={handleClose}
-          className="absolute w-10 top-2 mt-1 font-semibold right-2 text-gray-700 hover:text-blue-700"
-          style={{ lineHeight: 0 }} 
+          className="absolute bg-red-100 top-2 right-2 text-red-500 rounded hover:text-red-700"
         >
-          &times;
+          <FiX size={24} />
         </button>
         {isSignUpActive ? (
           <Signup signInFormActive={toggleForm} />

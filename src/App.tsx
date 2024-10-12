@@ -8,6 +8,8 @@ import Auth from './pages/Auth/Auth';
 import ProfilePage from './pages/profile/ProfilePage';
 import UserJobsPage from './pages/Jobs/userJobsPage';
 import SearchResultsPage from './pages/SearchResultsPage/SearchResultsPage';
+import NotFound from './pages/Auth/NotFound';
+import ApplicantsPage from './pages/Jobs/ApplicantsPage';
 
 const App: React.FC = () => {
 
@@ -24,15 +26,18 @@ const App: React.FC = () => {
             path="/job/:jobId"
             element={<SingleJobPage />}
           />
+
+          <Route path="*" element={<NotFound />} />
+
           <Route
             path="/auth"
             element={<Auth />}
           />
+          <Route path="/jobs/:jobId/applicants" element={<ApplicantsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/user-jobs" element={<UserJobsPage />} />
           <Route path="/search-results" element={<SearchResultsPage />} />
         </Routes>
-        <Footer />
         <Footer />
       </div>
     </Router>
