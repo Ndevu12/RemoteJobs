@@ -40,7 +40,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-wrap justify-between items-center p-4 bg-white shadow-md">
+    <div className="flex flex-wrap justify-between items-center p-4 bg-white shadow-md border-b border-gray-300">
       <div className="flex items-center cursor-pointer" onClick={handleLogoClick}>
         <img className="w-20 rounded cursor-pointer" src={logo} alt="Company Logo" />
         <span className="ml-4 text-xl font-bold">Remote Jobs</span>
