@@ -22,6 +22,7 @@ const UserJobsPage: React.FC = () => {
       name: '',
       logo: '',
       website: '',
+      logoBackground: '',
     },
     contract: '',
     location: '',
@@ -69,7 +70,19 @@ const UserJobsPage: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setNewJob({ ...newJob, [name]: value });
+    const nameParts: string[] = name.split('.');
+  
+    if (nameParts.length === 2) {
+      setNewJob(prevState => ({
+        ...prevState,
+        [nameParts[0]]: {
+          ...(prevState[nameParts[0] as keyof Job] as any),
+          [nameParts[1]]: value,
+        },
+      }));
+    } else {
+      setNewJob({ ...newJob, [name]: value });
+    }
   };
 
   const handleArrayInputChange = (arrayName: ArrayKeys, index: number, value: string) => {
@@ -103,15 +116,36 @@ const UserJobsPage: React.FC = () => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
+        const jobData = {
+          company: {
+            name: newJob.company.name,
+            website: newJob.company.website,
+            logo: newJob.company.logo,
+            logoBackground: '#FFFFFF',
+          },
+          contract: newJob.contract,
+          position: newJob.position,
+          location: newJob.location,
+          description: newJob.description,
+          requirements: newJob.requirements,
+          qualifications: newJob.qualifications,
+          responsibilities: newJob.responsibilities,
+          skills: newJob.skills,
+          benefits: newJob.benefits,
+          role: newJob.role,
+          status: newJob.status,
+          appliedJobs: [],
+        };
+  
         const response = await fetch(`${API_BASE_URL}/jobs`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(newJob),
+          body: JSON.stringify(jobData),
         });
-
+  
         if (response.ok) {
           toast.success('Job posted successfully');
           const postedJob = await response.json();
@@ -123,6 +157,7 @@ const UserJobsPage: React.FC = () => {
               name: '',
               logo: '',
               website: '',
+              logoBackground: '',
             },
             contract: '',
             location: '',
@@ -134,6 +169,9 @@ const UserJobsPage: React.FC = () => {
             benefits: { content: '', items: [''] },
             role: { content: '', items: [''] },
           });
+        } else if (response.status === 400) {
+          console.log('sent data: ', jobData);
+          toast.error("Please enter valid inputs.");
         } else {
           toast.error('Failed to post job');
         }
@@ -203,8 +241,8 @@ const UserJobsPage: React.FC = () => {
               <ul>
                 {jobs.map(job => (
                   <li key={defaultJobKey()} className="mb-4 border p-4 rounded">
-                    <div className="flex items-center mb-4">
-                      <img src={job.company.logo} alt={job.company.name} className="w-16 h-16 mr-4" style={{ backgroundColor: job.company.logoBackground }} />
+                    <div className="flex items-center rounded mb-4">
+                      <img src={job.company.logo} alt={job.company.name} className="w-16 h-16 rounded mr-4" style={{ backgroundColor: job.company.logoBackground }} />
                       <div>
                         <p><strong>Company:</strong> {job.company.name}</p>
                         <p><strong>Website:</strong> <a href={job.company.website} target="_blank" rel="noopener noreferrer">{job.company.website}</a></p>

@@ -20,7 +20,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const localToken = localStorage.getItem('local_token');
     const hasAccountFlag = localStorage.getItem('hasAccount') === 'true';
+    
+    if (token && localToken) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('local_token', '');
+    }
+    setIsLoggedIn(!!localToken);
     setIsLoggedIn(!!token);
     setHasAccount(hasAccountFlag);
   }, []);
@@ -30,6 +37,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
+    localStorage.removeItem('local_token');
     localStorage.removeItem('token');
     setIsLoggedIn(false);
   };

@@ -29,7 +29,7 @@ const Signup: React.FC<Props> = ({ signInFormActive }) => {
     };
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/user`, {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

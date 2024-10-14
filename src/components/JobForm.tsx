@@ -36,31 +36,41 @@ const JobForm: React.FC<JobFormProps> = ({ job, onChange, onArrayChange, onAddAr
         />
       </div>
       <div className="mb-4">
-        <label htmlFor="company" className="block text-gray-700">Company Name</label>
+        <label htmlFor="company.name" className="block text-gray-700">Company Name</label>
         <input
           type="text"
-          name="company"
+          name="company.name"
           value={job.company.name}
           onChange={onChange}
           className="mt-1 p-2 w-full border rounded"
         />
       </div>
       <div className="mb-4">
-        <label htmlFor="logo" className="block text-gray-700">Company Logo URL</label>
+        <label htmlFor="company.logo" className="block text-gray-700">Company Logo URL</label>
         <input
           type="text"
-          name="logo"
+          name="company.logo"
           value={job.company.logo}
           onChange={onChange}
           className="mt-1 p-2 w-full border rounded"
         />
       </div>
       <div className="mb-4">
-        <label htmlFor="url" className="block text-gray-700">Company Website URL</label>
+        <label htmlFor="company.website" className="block text-gray-700">Company Website URL</label>
         <input
           type="text"
-          name="url"
+          name="company.website"
           value={job.company.website}
+          onChange={onChange}
+          className="mt-1 p-2 w-full border rounded"
+        />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="company.logoBackground" className="block text-gray-700">Company Logo Background</label>
+        <input
+          type="text"
+          name="company.logoBackground"
+          value={job.company.logoBackground || ''}
           onChange={onChange}
           className="mt-1 p-2 w-full border rounded"
         />
@@ -91,7 +101,7 @@ const JobForm: React.FC<JobFormProps> = ({ job, onChange, onArrayChange, onAddAr
           name="requirements.content"
           value={job.requirements.content}
           onChange={onChange}
-          className="mt-1 p-2 w-full border rounded"
+          className="mt-1 p-2 w-full text-gray-700 border rounded"
         />
       </div>
       <ArrayField
@@ -107,7 +117,7 @@ const JobForm: React.FC<JobFormProps> = ({ job, onChange, onArrayChange, onAddAr
           name="qualifications.content"
           value={job.qualifications.content}
           onChange={onChange}
-          className="mt-1 p-2 w-full border rounded"
+          className="mt-1 p-2 w-full text-gray-700 border rounded"
         />
       </div>
       <ArrayField
