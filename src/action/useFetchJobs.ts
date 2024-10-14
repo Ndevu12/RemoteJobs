@@ -15,14 +15,26 @@ export const useFetchJobs = (filterData?: { title?: string; location?: string; f
         const response = await fetch(`${API_BASE_URL}/jobs`);
 
         if (response.ok) {
-          const jobs: JobType[] = (await response.json()).jobs;
+          const jobs: JobType[] = (await response.json()).jobs.map((job: any, index: number) => ({
+            ...job,
+            id: job._id || `job-${index}`,
+          }));
           setJobsData(filterJobs(jobs, filterData));
         } else {
-          setJobsData(mockJobsData);
+          toast.error("Failed to fetch jobs: App is populated with dummy data.");
+          const jobs = mockJobsData.map((job, index) => ({
+            ...job,
+            id: job.id || `job-${index}`,
+          }));
+          setJobsData(filterJobs(jobs, filterData));
         }
       } catch (error: any) {
         toast.error(`Error fetching jobs: ${error.message}`);
-        setJobsData(mockJobsData);
+        const jobs = mockJobsData.map((job, index) => ({
+          ...job,
+          id: job.id || `job-${index}`,
+        }));
+        setJobsData(filterJobs(jobs, filterData));
       } finally {
         setLoading(false);
       }

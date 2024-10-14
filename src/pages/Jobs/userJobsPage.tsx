@@ -3,21 +3,26 @@ import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { UserDummyJobData } from '../../../DummyData/userJobs';
-import ArrayField from '../../components/ArrayField/ArrayField';
+import JobForm from '../../components/JobForm';
+import { Job } from '../../lib/job';
 
 const API_BASE_URL = (import.meta as any).env.VITE_REACT_APP_API_BASE_URL;
+
+export type ArrayKeys = 'requirements' | 'qualifications' | 'responsibilities' | 'skills' | 'benefits' | 'role';
 
 const UserJobsPage: React.FC = () => {
   const { isLoggedIn } = useAuth();
   const [activeTab, setActiveTab] = useState('postedJobs');
-  const [jobs, setJobs] = useState<any[]>(UserDummyJobData);
-  const [appliedJobs, setAppliedJobs] = useState<any[]>(UserDummyJobData.filter(job => job.AppliedJobs.length > 0));
-  const [newJob, setNewJob] = useState({
-    title: '',
+  const [jobs, setJobs] = useState<Job[]>(UserDummyJobData);
+  const [appliedJobs, setAppliedJobs] = useState<Job[]>(UserDummyJobData.filter(job => job.AppliedJobs && job.AppliedJobs.length > 0));
+  const [newJob, setNewJob] = useState<Job>({
+    position: '',
     description: '',
-    company: '',
-    logo: '',
-    url: '',
+    company: {
+      name: '',
+      logo: '',
+      website: '',
+    },
     contract: '',
     location: '',
     status: 'open',
@@ -67,7 +72,7 @@ const UserJobsPage: React.FC = () => {
     setNewJob({ ...newJob, [name]: value });
   };
 
-  const handleArrayInputChange = (arrayName: string, index: number, value: string) => {
+  const handleArrayInputChange = (arrayName: ArrayKeys, index: number, value: string) => {
     setNewJob(prevState => {
       const updatedArray = [...prevState[arrayName].items];
       updatedArray[index] = value;
@@ -75,19 +80,23 @@ const UserJobsPage: React.FC = () => {
     });
   };
 
-  const addArrayItem = (arrayName: string) => {
+  const addArrayItem = (arrayName: ArrayKeys) => {
     setNewJob(prevState => {
       const updatedArray = [...prevState[arrayName].items, ''];
       return { ...prevState, [arrayName]: { ...prevState[arrayName], items: updatedArray } };
     });
   };
 
-  const removeArrayItem = (arrayName: string, index: number) => {
+  const removeArrayItem = (arrayName: ArrayKeys, index: number) => {
     setNewJob(prevState => {
       const updatedArray = prevState[arrayName].items.filter((_, i) => i !== index);
       return { ...prevState, [arrayName]: { ...prevState[arrayName], items: updatedArray } };
     });
   };
+
+  const defaultJobKey = () =>{
+    return `${Math.random().toString(36).substr(2, 9)}`;
+  }
 
   const handlePostJob = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,11 +117,13 @@ const UserJobsPage: React.FC = () => {
           const postedJob = await response.json();
           setJobs([...jobs, postedJob]);
           setNewJob({
-            title: '',
+            position: '',
             description: '',
-            company: '',
-            logo: '',
-            url: '',
+            company: {
+              name: '',
+              logo: '',
+              website: '',
+            },
             contract: '',
             location: '',
             status: 'open',
@@ -191,7 +202,7 @@ const UserJobsPage: React.FC = () => {
             {jobs.length > 0 ? (
               <ul>
                 {jobs.map(job => (
-                  <li key={job.id} className="mb-4 border p-4 rounded">
+                  <li key={defaultJobKey()} className="mb-4 border p-4 rounded">
                     <div className="flex items-center mb-4">
                       <img src={job.company.logo} alt={job.company.name} className="w-16 h-16 mr-4" style={{ backgroundColor: job.company.logoBackground }} />
                       <div>
@@ -206,13 +217,13 @@ const UserJobsPage: React.FC = () => {
                     <p><strong>Description:</strong> {job.description}</p>
                     <p><strong>Status:</strong> {job.status}</p>
                     <button
-                      onClick={() => handleJobStatusChange(job.id, job.status === 'open' ? 'closed' : 'open')}
+                      onClick={() => handleJobStatusChange(job.id!, job.status === 'open' ? 'closed' : 'open')}
                       className="bg-blue-400 text-white px-4 py-2 rounded mt-2"
                     >
                       {job.status === 'open' ? 'Close Job' : 'Reopen Job'}
                     </button>
                     <button
-                      onClick={() => handleViewApplicants(job.id)}
+                      onClick={() => handleViewApplicants(job.id!)}
                       className="bg-green-400 text-white px-4 py-2 rounded mt-2 ml-2"
                     >
                       View Applicants
@@ -228,7 +239,7 @@ const UserJobsPage: React.FC = () => {
         {activeTab === 'appliedJobs' && (
           <div className='mt-5 mb-7 px-10 pt-5 border border-grey-700 rounded-lg mx-auto max-w-4xl'>
             <h2 className="text-xl font-bold mb-4">Applied Jobs</h2>
-            {appliedJobs.length > 0 ? (
+            {appliedJobs && appliedJobs.length > 0 ? (
               <ul>
                 {appliedJobs.map(job => (
                   <li key={job.id} className="mb-4 border p-4 rounded">
@@ -256,174 +267,14 @@ const UserJobsPage: React.FC = () => {
         {activeTab === 'postJob' && (
           <div className='mt-5 mb-7 px-10 pt-5 border border-grey-700 rounded-lg mx-auto max-w-4xl'>
             <h2 className="text-xl font-bold mb-4">Post a New Job</h2>
-            <form onSubmit={handlePostJob} className="mb-4">
-              <div className="mb-4">
-                <label htmlFor="title" className="block text-gray-700">Job Title</label>
-                <input
-                  type="text"
-                  name="title"
-                  value={newJob.title}
-                  onChange={handleInputChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="description" className="block text-gray-700">Job Description</label>
-                <textarea
-                  name="description"
-                  value={newJob.description}
-                  onChange={handleInputChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="company" className="block text-gray-700">Company Name</label>
-                <input
-                  type="text"
-                  name="company"
-                  value={newJob.company}
-                  onChange={handleInputChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="logo" className="block text-gray-700">Company Logo URL</label>
-                <input
-                  type="text"
-                  name="logo"
-                  value={newJob.logo}
-                  onChange={handleInputChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="url" className="block text-gray-700">Company Website URL</label>
-                <input
-                  type="text"
-                  name="url"
-                  value={newJob.url}
-                  onChange={handleInputChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="contract" className="block text-gray-700">Contract Type</label>
-                <input
-                  type="text"
-                  name="contract"
-                  value={newJob.contract}
-                  onChange={handleInputChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="location" className="block text-gray-700">Location</label>
-                <input
-                  type="text"
-                  name="location"
-                  value={newJob.location}
-                  onChange={handleInputChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="requirements.content" className="block text-gray-700">Requirements Content</label>
-                <textarea
-                  name="requirements.content"
-                  value={newJob.requirements.content}
-                  onChange={handleInputChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <ArrayField
-                label="Requirements Items"
-                items={newJob.requirements.items}
-                onAddItem={() => addArrayItem('requirements')}
-                onRemoveItem={(index) => removeArrayItem('requirements', index)}
-                onChangeItem={(index, value) => handleArrayInputChange('requirements', index, value)}
-              />
-              <div className="mb-4">
-                <label htmlFor="qualifications.content" className="block text-gray-700">Qualifications Content</label>
-                <textarea
-                  name="qualifications.content"
-                  value={newJob.qualifications.content}
-                  onChange={handleInputChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <ArrayField
-                label="Qualifications Items"
-                items={newJob.qualifications.items}
-                onAddItem={() => addArrayItem('qualifications')}
-                onRemoveItem={(index) => removeArrayItem('qualifications', index)}
-                onChangeItem={(index, value) => handleArrayInputChange('qualifications', index, value)}
-              />
-              <div className="mb-4">
-                <label htmlFor="responsibilities.content" className="block text-gray-700">Responsibilities Content</label>
-                <textarea
-                  name="responsibilities.content"
-                  value={newJob.responsibilities.content}
-                  onChange={handleInputChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <ArrayField
-                label="Responsibilities Items"
-                items={newJob.responsibilities.items}
-                onAddItem={() => addArrayItem('responsibilities')}
-                onRemoveItem={(index) => removeArrayItem('responsibilities', index)}
-                onChangeItem={(index, value) => handleArrayInputChange('responsibilities', index, value)}
-              />
-              <div className="mb-4">
-                <label htmlFor="skills.content" className="block text-gray-700">Skills Content</label>
-                <textarea
-                  name="skills.content"
-                  value={newJob.skills.content}
-                  onChange={handleInputChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <ArrayField
-                label="Skills Items"
-                items={newJob.skills.items}
-                onAddItem={() => addArrayItem('skills')}
-                onRemoveItem={(index) => removeArrayItem('skills', index)}
-                onChangeItem={(index, value) => handleArrayInputChange('skills', index, value)}
-              />
-              <div className="mb-4">
-                <label htmlFor="benefits.content" className="block text-gray-700">Benefits Content</label>
-                <textarea
-                  name="benefits.content"
-                  value={newJob.benefits.content}
-                  onChange={handleInputChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <ArrayField
-                label="Benefits Items"
-                items={newJob.benefits.items}
-                onAddItem={() => addArrayItem('benefits')}
-                onRemoveItem={(index) => removeArrayItem('benefits', index)}
-                onChangeItem={(index, value) => handleArrayInputChange('benefits', index, value)}
-              />
-              <div className="mb-4">
-                <label htmlFor="role.content" className="block text-gray-700">Role Content</label>
-                <textarea
-                  name="role.content"
-                  value={newJob.role.content}
-                  onChange={handleInputChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <ArrayField
-                label="Role Items"
-                items={newJob.role.items}
-                onAddItem={() => addArrayItem('role')}
-                onRemoveItem={(index) => removeArrayItem('role', index)}
-                onChangeItem={(index, value) => handleArrayInputChange('role', index, value)}
-              />
-              <button type="submit" className="bg-blue-400 text-white px-4 py-2 rounded">Post Job</button>
-            </form>
+            <JobForm
+              job={newJob}
+              onChange={handleInputChange}
+              onArrayChange={handleArrayInputChange}
+              onAddArrayItem={addArrayItem}
+              onRemoveArrayItem={removeArrayItem}
+              onSubmit={handlePostJob}
+            />
           </div>
         )}
       </div>
