@@ -15,7 +15,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
       <figure
         className="w-[30%] flex items-center justify-center rounded mb-4"
       >
-        <img src={job.company?.logo} alt="Company logo" />
+        <img src={job.company?.logo} alt={job.company?.name}/>
       </figure>
       <div className="job-time flex items-center text-gray-500 text-sm mb-2">
         <span>{transformTime(job.postedAt || "")}</span>

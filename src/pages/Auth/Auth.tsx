@@ -24,7 +24,7 @@ const Auth: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center items-center m-5 bg-gray-100">
+    <div className="flex justify-center items-center m-5">
       <div className="relative bg-white p-8 rounded w-full max-w-md">
         <button
           onClick={handleClose}

@@ -58,6 +58,10 @@ const JobsPage: React.FC<Props> = ({ filterData }) => {
     navigate(`/job/${jobId}`);
   };
 
+  const defaultJobKey = () =>{
+    return `job-${Math.random().toString(36).substr(2, 9)}`;
+  }
+
   return (
     <div className="flex flex-col items-center justify-center mt-6 ">
       <div className="jobs-page w-[80%] p-4">
@@ -69,7 +73,7 @@ const JobsPage: React.FC<Props> = ({ filterData }) => {
         ) : sortedJobs.length ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {sortedJobs.slice(0, visibleJobs).map((job) => (
-              <JobCard key={job.id} job={job} onClick={jobViewHandler} />
+              <JobCard key={job.id || defaultJobKey()} job={job} onClick={jobViewHandler} />
             ))}
           </div>
         ) : (
