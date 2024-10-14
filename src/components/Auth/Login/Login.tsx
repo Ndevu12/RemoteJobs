@@ -35,7 +35,7 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/user/login`, {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,6 +55,9 @@ const Login: React.FC = () => {
       } else if (response.status === 401) {
         toast.error("Invalid Credentials.");
         setLoading(false);
+      } else if (response.status === 400) {
+        toast.error("Please enter valid inputs.");
+        setLoading(false);
       } else {
         throw new Error("Server error");
       }
@@ -70,7 +73,7 @@ const Login: React.FC = () => {
       const user = users.find((user: any) => user.email === formData.email && user.password === formData.password);
       if (user) {
         const token = generateToken({ email: user.email });
-        localStorage.setItem("token", token);
+        localStorage.setItem("local_token", token);
         toast.success("Login successful using local data! Welcome!");
         login(); // Update AuthContext state
         setHasAccount(true); // Ensure hasAccount is set to true
