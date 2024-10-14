@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { UserDummyJobData } from '../../../DummyData/userJobs';
 import JobForm from '../../components/JobForm';
@@ -212,6 +212,7 @@ const UserJobsPage: React.FC = () => {
 
   return (
     <div className="className='mt-7 mb-7 p-6 rounded-lg mx-auto max-w-4xl">
+       <ToastContainer />
       <h1 className="text-2xl font-bold mb-4">Jobs Page</h1>
       <div className="mb-8">
         <div className="flex space-x-4 mb-4">

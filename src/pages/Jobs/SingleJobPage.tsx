@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import transformTime from "../../utils/FormatTime";
 import Button2 from "../../components/Buttons/Button2";
 import Button from "../../components/Buttons/Button";
@@ -91,8 +92,13 @@ const SingleJobPage: React.FC = () => {
   const handleUseProfileCV = async () => {
     setIsModalOpen(false);
     const token = localStorage.getItem("token");
+    if (!jobData?._id) {
+      toast.error("Job ID is missing");
+      console.error("Job ID is missing");
+      return;
+    }
     try {
-      const response = await fetch(`${API_BASE_URL}/jobs/apply/${jobData?.id}`, {
+      const response = await fetch(`${API_BASE_URL}/jobs/${jobData._id}/apply/existing`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -103,15 +109,18 @@ const SingleJobPage: React.FC = () => {
         toast.success("Successfully applied for the job");
         setApplyText("Applied");
       } else {
+        const errorData = await response.json();
+        toast.error(errorData.message + '. Upload CV to apply.');
         throw new Error("Failed to apply for the job");
       }
     } catch (error) {
+      console.error("Error applying for the job:", error);
       // Fallback to localStorage
       const appliedJobs = JSON.parse(localStorage.getItem("appliedJobs") || "[]");
-      appliedJobs.push({ jobId: jobData?.id, method: "profileCV" });
+      appliedJobs.push({ jobId: jobData.id, method: "profileCV" });
       localStorage.setItem("appliedJobs", JSON.stringify(appliedJobs));
-      toast.success("Successfully applied for the job (stored locally)");
-      setApplyText("Applied");
+      toast.info("Successfully applied for the job locally");
+      setApplyText("Applied locally");
     }
   };
 
@@ -124,15 +133,21 @@ const SingleJobPage: React.FC = () => {
   const handleUploadCV = async () => {
     if (!selectedFile) {
       toast.error("Please select a file to upload");
+      console.error("No file selected");
       return;
     }
 
     const token = localStorage.getItem("token");
+    if (!jobData?._id) {
+      toast.error("Job ID is missing");
+      console.error("Job ID is missing");
+      return;
+    }
     const formData = new FormData();
     formData.append("cv", selectedFile);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/jobs/apply/${jobData?.id}`, {
+      const response = await fetch(`${API_BASE_URL}/jobs/${jobData._id}/apply/new`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -147,9 +162,11 @@ const SingleJobPage: React.FC = () => {
         throw new Error("Failed to apply for the job");
       }
     } catch (error) {
+      console.error("Error applying for the job:", error);
       // Fallback to localStorage
+      toast.info("Application failed");
       const appliedJobs = JSON.parse(localStorage.getItem("appliedJobs") || "[]");
-      appliedJobs.push({ jobId: jobData?.id, method: "uploadedCV", fileName: selectedFile.name });
+      appliedJobs.push({ jobId: jobData._id, method: "uploadedCV", fileName: selectedFile.name });
       localStorage.setItem("appliedJobs", JSON.stringify(appliedJobs));
       toast.success("Successfully applied for the job (stored locally)");
       setApplyText("Applied");
@@ -164,6 +181,7 @@ const SingleJobPage: React.FC = () => {
 
   return (
     <div className="bg-white mt-5 mb-7 p-6 border border-grey-700 rounded-lg shadow-lg mx-auto max-w-4xl">
+      <ToastContainer />
       <div className="flex flex-col items-center justify-center mb-6">
         <figure
           style={{ backgroundColor: jobData?.company?.logoBackground || "#f0f0f0" }}
