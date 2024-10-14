@@ -127,5 +127,3 @@ git push origin feature/your-feature-name
 
 This project is licensed under the MIT License. See the LICENSE file for details.
 
-`
-This README provides a comprehensive overview of the [`RemoteJobs`](command:_github.copilot.openSymbolFromReferences?%5B%22%22%2C%5B%7B%22uri%22%3A%7B%22scheme%22%3A%22file%22%2C%22authority%22%3A%22%22%2C%22path%22%3A%22%2FUsers%2Fndevu%2FDesktop%2FJulien%20Barber%20Test%2FRemoteJobs%2FREADME.md%22%2C%22query%22%3A%22%22%2C%22fragment%22%3A%22%22%7D%2C%22pos%22%3A%7B%22line%22%3A0%2C%22character%22%3A2%7D%7D%5D%2C%2253780c83-2c34-487d-ae48-874b30cfe3e2%22%5D "Go to definition") project, including its features, installation instructions, usage guidelines, API endpoints, contribution guidelines, and license information`.
