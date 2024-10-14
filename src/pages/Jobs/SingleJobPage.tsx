@@ -9,6 +9,7 @@ import { PropagateLoader } from "react-spinners";
 import { dummyJobData } from "../../../DummyData/detailedJob";
 import Modal from 'react-modal';
 import { FiX } from 'react-icons/fi';
+import { jwtDecode } from 'jwt-decode';
 
 const API_BASE_URL = (import.meta as any).env.VITE_REACT_APP_API_BASE_URL;
 
@@ -54,7 +55,11 @@ const SingleJobPage: React.FC = () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await fetch(`${API_BASE_URL}/account`, {
+        // Decode the token to get the userId
+        const decodedToken: any = jwtDecode(token);
+        const userId = decodedToken.userId;
+
+          const response = await fetch(`${API_BASE_URL}/account/${userId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -166,7 +171,7 @@ const SingleJobPage: React.FC = () => {
       // Fallback to localStorage
       toast.info("Application failed");
       const appliedJobs = JSON.parse(localStorage.getItem("appliedJobs") || "[]");
-      appliedJobs.push({ jobId: jobData._id, method: "uploadedCV", fileName: selectedFile.name });
+      appliedJobs.push({ jobId: jobData._id || jobData.id, method: "uploadedCV", fileName: selectedFile.name });
       localStorage.setItem("appliedJobs", JSON.stringify(appliedJobs));
       toast.success("Successfully applied for the job (stored locally)");
       setApplyText("Applied");

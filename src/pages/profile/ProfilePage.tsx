@@ -4,8 +4,13 @@ import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { dummyUserData } from '../../../DummyData/users/dummyUserData';
 import Button from '../../components/Buttons/Button';
+import {jwtDecode} from 'jwt-decode';
 
 const API_BASE_URL = (import.meta as any).env.VITE_REACT_APP_API_BASE_URL;
+
+const defaultJobKey = () => {
+  return `${Math.random().toString(36).substr(2, 9)}`;
+};
 
 const ProfilePage: React.FC = () => {
   const { isLoggedIn } = useAuth();
@@ -27,7 +32,10 @@ const ProfilePage: React.FC = () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await fetch(`${API_BASE_URL}/account`, {
+          // Decode the token to get the userId
+          const decodedToken: any = jwtDecode(token);
+          const userId = decodedToken.userId;
+          const response = await fetch(`${API_BASE_URL}/account/${userId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -65,7 +73,8 @@ const ProfilePage: React.FC = () => {
               });
             }
           }
-        } catch (error) {
+        } catch (error: any) {
+          console.log(error.message);
           toast.error('Something went wrong, Try again!');
           const localData = localStorage.getItem('userData');
           if (localData) {
@@ -134,6 +143,7 @@ const ProfilePage: React.FC = () => {
           toast.error('Failed to update profile');
         }
       } catch (error) {
+        console.log(error);
         toast.error('Something went wrong, Try again!');
       }
     }
@@ -160,6 +170,7 @@ const ProfilePage: React.FC = () => {
           toast.error('Failed to change password');
         }
       } catch (error) {
+        console.log(error);
         toast.error('Something went wrong, Try again!');
       }
     }
@@ -173,8 +184,8 @@ const ProfilePage: React.FC = () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await fetch(`${API_BASE_URL}/account/upload-profile-image`, {
-            method: 'POST',
+          const response = await fetch(`${API_BASE_URL}/account`, {
+            method: 'PUT',
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -190,6 +201,7 @@ const ProfilePage: React.FC = () => {
             toast.error('Failed to upload profile image');
           }
         } catch (error) {
+          console.log(error);
           toast.error('Something went wrong, Try again!');
         }
       }
@@ -221,6 +233,7 @@ const ProfilePage: React.FC = () => {
             toast.error('Failed to upload CV');
           }
         } catch (error) {
+          console.log(error);
           toast.error('Something went wrong, Try again!');
         }
       }
@@ -233,7 +246,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className='bg-white mt-5 mb-7 p-6 rounded-lg mx-auto max-w-4xl'>
-       <ToastContainer />
+      <ToastContainer />
       <div className="container mt-7 mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Profile</h1>
         {userData ? (
@@ -298,6 +311,7 @@ const ProfilePage: React.FC = () => {
               <div className="flex flex-col items-left justify-center pl-10 pt-10 pb-5 mb-4 border border-gray-100 pt-3 rounded pb-10">
                 <p><span className='font-medium text-lg'>Name: </span>{userData.name}</p>
                 <p><span className='font-medium text-lg'>Email: </span>{userData.email}</p>
+                <p><span className='font-medium text-lg'>Occupation: </span>{userData.occupation}</p>
                 <p><span className='font-medium text-lg'>Phone: </span>{userData.phone}</p>
                 <p><span className='font-medium text-lg'>Address: </span>{`${userData.address.street}, ${userData.address.city}, ${userData.address.state}, ${userData.address.zip}, ${userData.address.country}`}</p>
                 <button onClick={() => setEditMode(true)} className="w-[30%] bg-blue-400 text-white px-4 py-2 rounded mt-4">Edit Profile</button>
@@ -306,10 +320,10 @@ const ProfilePage: React.FC = () => {
             )}
             <div className="mt-8 flex flex-col items-left justify-center pl-10 pt-10 pb-5 mb-4 border border-gray-100 rounded">
               <h2 className="text-xl font-bold mb-4">Applied Jobs</h2>
-              {userData.AppliedJobs.length > 0 ? (
+              {userData.appliedJobs.length > 0 ? (
                 <ul>
-                  {userData.AppliedJobs.map((job: any) => (
-                    <li key={job.jobId} className="mb-4">
+                  {userData.appliedJobs.map((job: any) => (
+                    <li key={defaultJobKey()} className="mb-4">
                       <p><span className='font-medium text-lg'>Position: </span>{job.position}</p>
                       <p><span className='font-medium text-lg'>Company: </span>{job.company}</p>
                       <p><span className='font-medium text-lg'>Applied At: </span>{new Date(job.appliedAt).toLocaleDateString()}</p>
@@ -324,6 +338,52 @@ const ProfilePage: React.FC = () => {
               <h2 className="text-xl font-bold mb-4">Upload CV</h2>
               <input type="file" name="cv" onChange={handleFileChange} className="mt-2" />
               <button onClick={handleUploadCv} className="bg-blue-400 text-white px-4 py-2 rounded mt-2">Upload CV</button>
+            </div>
+            <div className="mt-8 pl-10">
+              <h2 className="text-xl font-bold mb-4">Education</h2>
+              {userData.education.length > 0 ? (
+                <ul>
+                  {userData.education.map((edu: any) => (
+                    <li key={defaultJobKey()} className="mb-4">
+                      <p><span className='font-medium text-lg'>Institution: </span>{edu.institution}</p>
+                      <p><span className='font-medium text-lg'>Degree: </span>{edu.degree}</p>
+                      <p><span className='font-medium text-lg'>Year: </span>{edu.year}</p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No education details available.</p>
+              )}
+            </div>
+            <div className="mt-8 pl-10">
+              <h2 className="text-xl font-bold mb-4">Experience</h2>
+              {userData.experience.length > 0 ? (
+                <ul>
+                  {userData.experience.map((exp: any) => (
+                    <li key={defaultJobKey()} className="mb-4">
+                      <p><span className='font-medium text-lg'>Company: </span>{exp.company}</p>
+                      <p><span className='font-medium text-lg'>Role: </span>{exp.role}</p>
+                      <p><span className='font-medium text-lg'>Duration: </span>{exp.duration}</p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No experience details available.</p>
+              )}
+            </div>
+            <div className="mt-8 pl-10">
+              <h2 className="text-xl font-bold mb-4">Skills</h2>
+              {userData.skills.length > 0 ? (
+                <ul>
+                  {userData.skills.map((skill: any) => (
+                    <li key={defaultJobKey()} className="mb-4">
+                      <p><span className='font-medium text-lg'>Skill: </span>{skill.name}</p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No skills available.</p>
+              )}
             </div>
           </div>
         ) : (
