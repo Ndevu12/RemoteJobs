@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { dummyUserData } from '../../../DummyData/users/dummyUserData';
 import Button from '../../components/Buttons/Button';
@@ -233,6 +233,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className='bg-white mt-5 mb-7 p-6 rounded-lg mx-auto max-w-4xl'>
+       <ToastContainer />
       <div className="container mt-7 mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Profile</h1>
         {userData ? (

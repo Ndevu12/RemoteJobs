@@ -19,6 +19,8 @@ RemoteJobs is a web application designed to help users find and apply for remote
 - **User Profiles**: Users can create profiles, upload resumes, and track their job applications.
 - **Search and Filter**: Search and filter job listings based on various criteria such as location, job type, and company.
 
+## N.B: All APIs are not implemented.
+
 ## Installation
 
 To get started with RemoteJobs, follow these steps:

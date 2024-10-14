@@ -5,6 +5,7 @@ import { useFetchJobs } from "../../action/useFetchJobs";
 import JobCard from "../../components/cards/JobCard";
 import UserReviews from "../../components/Review/UserReviews";
 import Button from "../../components/Buttons/Button";
+import { ToastContainer } from "react-toastify";
 
 interface Props {
   filterData?: {
@@ -64,6 +65,7 @@ const JobsPage: React.FC<Props> = ({ filterData }) => {
 
   return (
     <div className="flex flex-col items-center justify-center mt-6 ">
+       <ToastContainer />
       <div className="jobs-page w-[80%] p-4">
         <div className="text-lg font-semibold mb-6">Recent Jobs</div>
         {loading ? (
