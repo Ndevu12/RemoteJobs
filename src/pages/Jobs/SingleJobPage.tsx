@@ -215,7 +215,7 @@ const SingleJobPage: React.FC = () => {
         </div>
         <div className="flex items-center justify-end">
           <Button
-            className="job__time_btn"
+            className=""
             text={applyText}
             loading={btnLoading}
             disabled={btnDisable}
