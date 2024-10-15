@@ -40,13 +40,15 @@ const Header: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-wrap justify-between items-center p-4 bg-white shadow-md border-b border-gray-300">
+    <div className="flex flex-wrap md:flex-row md:flex-wrap justify-between items-center p-4 bg-white shadow-md border-b border-gray-300">
       <div className="flex items-center cursor-pointer" onClick={handleLogoClick}>
         <img className="w-20 rounded cursor-pointer" src={logo} alt="Company Logo" />
         <span className="ml-4 text-xl font-bold">Remote Jobs</span>
       </div>
-      <FilterForm filterJobsForm={handleFilterJobs} />
-      <div className="flex items-center relative">
+      <div className="hidden md:flex items-center flex-grow justify-center">
+        <FilterForm filterJobsForm={handleFilterJobs} />
+      </div>
+      <div className="flex items-center relative mt-4 md:mt-0">
         {isLoggedIn ? (
           <>
             <figure className="profile-photo cursor-pointer" onClick={toggleProfileMenu}>
@@ -71,6 +73,9 @@ const Header: React.FC = () => {
             Sign Up
           </button>
         )}
+      </div>
+      <div className="block md:hidden mt-4 w-full">
+        <FilterForm filterJobsForm={handleFilterJobs} />
       </div>
     </div>
   );
