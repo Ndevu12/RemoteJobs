@@ -1,5 +1,6 @@
 import React from "react";
 import { Search } from 'lucide-react';
+import { FaFilter } from 'react-icons/fa'; 
 
 interface Props {
   filterJobsForm: (formData: {
@@ -27,7 +28,7 @@ const FilterForm = (props: Props) => {
   return (
     <form onSubmit={onFilterSubmit} className="w-full md:w-1/2 lg:w-1/3 flex flex-col md:flex-row items-center gap-4 p-4 rounded-md">
       <div className="flex items-center w-full bg-gray-100 p-2 rounded-md">
-        <Search className="text-gray-500 mr-2" />
+        <FaFilter className="text-blue-300 mr-2" />
         <input
           type="text"
           name="title"
@@ -36,7 +37,7 @@ const FilterForm = (props: Props) => {
         />
       </div>
       <div className="flex items-center w-full">
-        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md flex items-center justify-center">
+        <button type="submit" className="w-full bg-blue-400 text-white p-2 rounded-md flex items-center justify-center">
           <Search className="mr-2" />
           Search
         </button>
