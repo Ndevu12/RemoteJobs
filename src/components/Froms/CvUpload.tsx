@@ -10,7 +10,7 @@ interface CvUploadProps {
 
 const API_BASE_URL = (import.meta as any).env.VITE_REACT_APP_API_BASE_URL;
 
-const CvUpload: React.FC<CvUploadProps> = ({ cv, setCv, userData, setUserData }) => {
+const CvUpload: React.FC<CvUploadProps> = ({ cv, setCv, setUserData }) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
     if (files && files.length > 0) {

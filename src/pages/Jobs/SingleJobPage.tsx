@@ -190,9 +190,9 @@ const SingleJobPage: React.FC = () => {
       <div className="flex flex-col items-center justify-center mb-6">
         <figure
           style={{ backgroundColor: jobData?.company?.logoBackground || "#f0f0f0" }}
-          className="job-view__company_logo w-24 h-24 flex items-center justify-center rounded-full mb-4"
+          className="w-[20%] flex items-center justify-center mb-4"
         >
-          <img src={`${jobData?.company?.logo}`} alt="Company Logo" className="w-full h-full object-cover rounded-full" />
+          <img src={`${jobData?.company?.logo}`} alt="Company Logo" className="w-full object-cover rounded" />
         </figure>
         <div className="company--website flex flex-col items-center">
           <p className="company--name text-2xl font-semibold mb-2">{jobData?.company?.name}</p>
