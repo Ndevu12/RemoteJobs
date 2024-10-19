@@ -29,7 +29,6 @@ const SingleJobPage: React.FC = () => {
         const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`);
         if (response.ok) {
           const job = await response.json();
-          console.log(job.job);
           setJobData(job.job);
         } else {
           toast.error("Failed to fetch job data");
@@ -86,9 +85,13 @@ const SingleJobPage: React.FC = () => {
 
   const applyNowHandler = () => {
     const token = localStorage.getItem("token");
-    if (!token) {
+    const local_token = localStorage.getItem("local_token");
+    if (!token && !local_token) {
       toast.info("Login is required");
       navigate('/auth?type=login');
+      return;
+    } else if (local_token) {
+      toast.error("Login using local data is not supported for this feature.");
       return;
     }
     setIsModalOpen(true);
@@ -99,7 +102,6 @@ const SingleJobPage: React.FC = () => {
     const token = localStorage.getItem("token");
     if (!jobData?._id) {
       toast.error("Job ID is missing");
-      console.error("Job ID is missing");
       return;
     }
     try {
@@ -115,17 +117,17 @@ const SingleJobPage: React.FC = () => {
         setApplyText("Applied");
       } else {
         const errorData = await response.json();
-        toast.error(errorData.message + '. Upload CV to apply.');
+        toast.error(errorData.message === 'Your CV not found' ? errorData.message + '. Upload CV to apply.' : errorData.message);
         throw new Error("Failed to apply for the job");
       }
     } catch (error) {
-      console.error("Error applying for the job:", error);
-      // Fallback to localStorage
+      const local_token = localStorage.getItem("local_token");
+      if (local_token) {
       const appliedJobs = JSON.parse(localStorage.getItem("appliedJobs") || "[]");
       appliedJobs.push({ jobId: jobData.id, method: "profileCV" });
       localStorage.setItem("appliedJobs", JSON.stringify(appliedJobs));
-      toast.info("Successfully applied for the job locally");
-      setApplyText("Applied locally");
+      toast.info("Job application stored locally");
+      }
     }
   };
 
@@ -138,18 +140,17 @@ const SingleJobPage: React.FC = () => {
   const handleUploadCV = async () => {
     if (!selectedFile) {
       toast.error("Please select a file to upload");
-      console.error("No file selected");
       return;
     }
 
     const token = localStorage.getItem("token");
     if (!jobData?._id) {
       toast.error("Job ID is missing");
-      console.error("Job ID is missing");
       return;
     }
     const formData = new FormData();
     formData.append("cv", selectedFile);
+    console.log(formData);
 
     try {
       const response = await fetch(`${API_BASE_URL}/jobs/${jobData._id}/apply/new`, {
@@ -167,9 +168,8 @@ const SingleJobPage: React.FC = () => {
         throw new Error("Failed to apply for the job");
       }
     } catch (error) {
-      console.error("Error applying for the job:", error);
-      // Fallback to localStorage
-      toast.info("Application failed");
+      
+      toast.error("Failed to apply for this job. Try again later.");
       const appliedJobs = JSON.parse(localStorage.getItem("appliedJobs") || "[]");
       appliedJobs.push({ jobId: jobData._id || jobData.id, method: "uploadedCV", fileName: selectedFile.name });
       localStorage.setItem("appliedJobs", JSON.stringify(appliedJobs));

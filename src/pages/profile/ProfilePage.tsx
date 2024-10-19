@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { toast, ToastContainer } from 'react-toastify';
+// import { Worker, Viewer } from '@react-pdf-viewer/core';
+import '@react-pdf-viewer/core/lib/styles/index.css';
+import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import { useNavigate } from 'react-router-dom';
 import { dummyUserData } from '../../../DummyData/users/dummyUserData';
-import Button from '../../components/Buttons/Button';
-import {jwtDecode} from 'jwt-decode';
-
+// import Button from '../../components/Buttons/Button';
+import { jwtDecode } from 'jwt-decode';
+import ProfileImageUpload from '../../components/Froms/ProfileImageUpload';
+import AddressForm from '../../components/Froms/AddressForm';
+import CvUpload from '../../components/Froms/CvUpload';
+import EducationForm from '../../components/Froms/EducationForm';
+import ExperienceForm from '../../components/Froms/ExperienceForm';
+import SkillsForm from '../../components/Froms/SkillsForm';
 const API_BASE_URL = (import.meta as any).env.VITE_REACT_APP_API_BASE_URL;
 
 const defaultJobKey = () => {
@@ -17,7 +25,7 @@ const ProfilePage: React.FC = () => {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', address: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', address: { street: '', city: '', state: '', zipCode: '', country: '' } });
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [cv, setCv] = useState<File | null>(null);
   const navigate = useNavigate();
@@ -45,10 +53,16 @@ const ProfilePage: React.FC = () => {
             const data = await response.json();
             setUserData(data.account);
             setFormData({
-              name: data.account.name,
-              email: data.account.email,
-              phone: data.account.phone,
-              address: `${data.account.address.street}, ${data.account.address.city}, ${data.account.address.state}, ${data.account.address.zip}, ${data.account.address.country}`,
+              name: data.account.name || '',
+              email: data.account.email || '',
+              phone: data.account.phone || '',
+              address: {
+                street: data.account.address?.street || '',
+                city: data.account.address?.city || '',
+                state: data.account.address?.state || '',
+                zipCode: data.account.address?.zipCode || '',
+                country: data.account.address?.country || ''
+              },
             });
             localStorage.setItem('userData', JSON.stringify(data.account));
           } else {
@@ -58,41 +72,64 @@ const ProfilePage: React.FC = () => {
               const parsedData = JSON.parse(localData);
               setUserData(parsedData);
               setFormData({
-                name: parsedData.name,
-                email: parsedData.email,
-                phone: parsedData.phone,
-                address: `${parsedData.address.street}, ${parsedData.address.city}, ${parsedData.address.state}, ${parsedData.address.zip}, ${parsedData.address.country}`,
+                name: parsedData?.name || '',
+                email: parsedData?.email || '',
+                phone: parsedData?.phone || '',
+                address: {
+                  street: parsedData?.address?.street || '',
+                  city: parsedData?.address?.city || '',
+                  state: parsedData?.address?.state || '',
+                  zipCode: parsedData?.address?.zipCode || '',
+                  country: parsedData?.address?.country || ''
+                },
               });
             } else {
               setUserData(dummyUserData.account); // Use dummy data
               setFormData({
-                name: dummyUserData.account.name,
-                email: dummyUserData.account.email,
-                phone: dummyUserData.account.phone,
-                address: `${dummyUserData.account.address.street}, ${dummyUserData.account.address.city}, ${dummyUserData.account.address.state}, ${dummyUserData.account.address.zip}, ${dummyUserData.account.address.country}`,
+                name: dummyUserData.account?.name || '',
+                email: dummyUserData.account?.email || '',
+                phone: dummyUserData.account?.phone || '',
+                address: {
+                  street: dummyUserData.account?.address?.street || '',
+                  city: dummyUserData.account?.address?.city || '',
+                  state: dummyUserData.account?.address?.state || '',
+                  zipCode: dummyUserData.account?.address?.zip || '',
+                  country: dummyUserData.account?.address?.country || ''
+                },
               });
             }
           }
         } catch (error: any) {
-          console.log(error.message);
-          toast.error('Something went wrong, Try again!');
+          toast.error(error.message);
           const localData = localStorage.getItem('userData');
           if (localData) {
             const parsedData = JSON.parse(localData);
             setUserData(parsedData);
             setFormData({
-              name: parsedData.name,
-              email: parsedData.email,
-              phone: parsedData.phone,
-              address: `${parsedData.address.street}, ${parsedData.address.city}, ${parsedData.address.state}, ${parsedData.address.zip}, ${parsedData.address.country}`,
+              name: parsedData?.name || '',
+              email: parsedData?.email || '',
+              phone: parsedData?.phone || '',
+              address: {
+                street: parsedData?.address?.street || '',
+                city: parsedData?.address?.city || '',
+                state: parsedData?.address?.state || '',
+                zipCode: parsedData?.address?.zipCode || '',
+                country: parsedData?.address?.country || ''
+              },
             });
           } else {
             setUserData(dummyUserData.account); // Use dummy data
             setFormData({
-              name: dummyUserData.account.name,
-              email: dummyUserData.account.email,
-              phone: dummyUserData.account.phone,
-              address: `${dummyUserData.account.address.street}, ${dummyUserData.account.address.city}, ${dummyUserData.account.address.state}, ${dummyUserData.account.address.zip}, ${dummyUserData.account.address.country}`,
+              name: dummyUserData.account?.name || '',
+              email: dummyUserData.account?.email || '',
+              phone: dummyUserData.account?.phone || '',
+              address: {
+                street: dummyUserData.account?.address?.street || '',
+                city: dummyUserData.account?.address?.city || '',
+                state: dummyUserData.account?.address?.state || '',
+                zipCode: dummyUserData.account?.address?.zip || '',
+                country: dummyUserData.account?.address?.country || ''
+              },
             });
           }
         }
@@ -103,19 +140,18 @@ const ProfilePage: React.FC = () => {
     fetchUserData();
   }, [isLoggedIn, navigate]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, files } = e.target;
-    if (files && files.length > 0) {
-      if (name === 'profileImage') {
-        setProfileImage(files[0]);
-      } else if (name === 'cv') {
-        setCv(files[0]);
-      }
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    if (['street', 'city', 'state', 'zipCode', 'country'].includes(name)) {
+      setFormData({
+        ...formData,
+        address: {
+          ...formData.address,
+          [name]: value
+        }
+      });
+    } else {
+      setFormData({ ...formData, [name]: value });
     }
   };
 
@@ -124,6 +160,7 @@ const ProfilePage: React.FC = () => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
+        console.log({ formData });
         const response = await fetch(`${API_BASE_URL}/account`, {
           method: 'PUT',
           headers: {
@@ -139,8 +176,10 @@ const ProfilePage: React.FC = () => {
           const updatedData = await response.json();
           setUserData(updatedData.account);
           localStorage.setItem('userData', JSON.stringify(updatedData.account));
-        } else {
-          toast.error('Failed to update profile');
+        } else if (response.status === 400) {
+          const errorData = await response.json();
+          const errorMessage = errorData.message || 'Failed to update profile';
+          toast.error(errorMessage);
         }
       } catch (error) {
         console.log(error);
@@ -176,69 +215,144 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleUploadProfileImage = async () => {
-    if (profileImage) {
-      const formData = new FormData();
-      formData.append('profileImage', profileImage);
+  const handleEducationInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+    const { name, value } = event.target;
+    const updatedEducation = [...userData.education];
+    updatedEducation[index] = { ...updatedEducation[index], [name]: value };
+    setUserData({ ...userData, education: updatedEducation });
+  };
 
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const response = await fetch(`${API_BASE_URL}/account`, {
-            method: 'PUT',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            body: formData,
-          });
+  const handleAddEducation = () => {
+    const updatedEducation = [...userData.education, { institution: '', degree: '', year: '' }];
+    setUserData({ ...userData, education: updatedEducation });
+  };
 
-          if (response.ok) {
-            toast.success('Profile image updated successfully');
-            const updatedData = await response.json();
-            setUserData(updatedData.account);
-            localStorage.setItem('userData', JSON.stringify(updatedData.account));
-          } else {
-            toast.error('Failed to upload profile image');
-          }
-        } catch (error) {
-          console.log(error);
-          toast.error('Something went wrong, Try again!');
+  const handleRemoveEducation = (index: number) => {
+    const updatedEducation = userData.education.filter((_: any, i: number) => i !== index);
+    setUserData({ ...userData, education: updatedEducation });
+  };
+
+  const handleUpdateEducation = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/account/education`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ education: userData.education }),
+        });
+
+        if (response.ok) {
+          toast.success('Education updated successfully');
+          const updatedData = await response.json();
+          setUserData(updatedData.account);
+          localStorage.setItem('userData', JSON.stringify(updatedData.account));
+        } else {
+          toast.error('Failed to update education');
         }
+      } catch (error) {
+        console.log(error);
+        toast.error('Something went wrong, Try again!');
       }
     }
   };
 
-  const handleUploadCv = async () => {
-    if (cv) {
-      const formData = new FormData();
-      formData.append('cv', cv);
+  const handleExperienceInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+    const { name, value } = event.target;
+    const updatedExperience = [...userData.experience];
+    updatedExperience[index] = { ...updatedExperience[index], [name]: value };
+    setUserData({ ...userData, experience: updatedExperience });
+  };
 
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const response = await fetch(`${API_BASE_URL}/account/upload-cv`, {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            body: formData,
-          });
+  const handleAddExperience = () => {
+    const updatedExperience = [...userData.experience, { company: '', role: '', duration: '' }];
+    setUserData({ ...userData, experience: updatedExperience });
+  };
 
-          if (response.ok) {
-            toast.success('CV uploaded successfully');
-            const updatedData = await response.json();
-            setUserData(updatedData.account);
-            localStorage.setItem('userData', JSON.stringify(updatedData.account));
-          } else {
-            toast.error('Failed to upload CV');
-          }
-        } catch (error) {
-          console.log(error);
-          toast.error('Something went wrong, Try again!');
+  const handleRemoveExperience = (index: number) => {
+    const updatedExperience = userData.experience.filter((_: any, i: number) => i !== index);
+    setUserData({ ...userData, experience: updatedExperience });
+  };
+
+  const handleUpdateExperience = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/account/experience`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ experience: userData.experience }),
+        });
+
+        if (response.ok) {
+          toast.success('Experience updated successfully');
+          const updatedData = await response.json();
+          setUserData(updatedData.account);
+          localStorage.setItem('userData', JSON.stringify(updatedData.account));
+        } else {
+          toast.error('Failed to update experience');
         }
+      } catch (error) {
+        console.log(error);
+        toast.error('Something went wrong, Try again!');
       }
     }
   };
+
+  const handleSkillsInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+    const { name, value } = event.target;
+    const updatedSkills = [...userData.skills];
+    updatedSkills[index] = { ...updatedSkills[index], [name]: value };
+    setUserData({ ...userData, skills: updatedSkills });
+  };
+
+  const handleAddSkill = () => {
+    const updatedSkills = [...userData.skills, { name: '' }];
+    setUserData({ ...userData, skills: updatedSkills });
+  };
+
+  const handleRemoveSkill = (index: number) => {
+    const updatedSkills = userData.skills.filter((_: any, i: number) => i !== index);
+    setUserData({ ...userData, skills: updatedSkills });
+  };
+
+  const handleUpdateSkills = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/account/skills`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ skills: userData.skills }),
+        });
+
+        if (response.ok) {
+          toast.success('Skills updated successfully');
+          const updatedData = await response.json();
+          setUserData(updatedData.account);
+          localStorage.setItem('userData', JSON.stringify(updatedData.account));
+        } else {
+          toast.error('Failed to update skills');
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error('Something went wrong, Try again!');
+      }
+    }
+  };
+
 
   if (loading) {
     return <div>Loading...</div>;
@@ -251,76 +365,35 @@ const ProfilePage: React.FC = () => {
         <h1 className="text-2xl font-bold mb-4">Profile</h1>
         {userData ? (
           <div className="container mt-7 mx-auto p-4">
-            <div className="flex flex-col items-center justify-center mb-4 border border-gray-100 pt-3 rounded pb-10">
-              <img src={userData.profileImage || 'https://via.placeholder.com/150'} alt="Profile" className="w-32 h-32 rounded-full" />
-              <input type="file" name="profileImage" onChange={handleFileChange} className="w-[30%] mt-2 mb-2" />
-              <Button
-                className="text-white px-4 py-2 rounded mt-2"
-                text={'Change Profile Image'}
-                onClick={handleUploadProfileImage}
-              />
-            </div>
+            <ProfileImageUpload
+              profileImage={profileImage}
+              setProfileImage={setProfileImage}
+              userData={userData}
+              setUserData={setUserData}
+            />
             {editMode ? (
               <div className="flex flex-col items-center justify-center mb-4 border border-gray-100 pt-3 rounded pb-10">
-                <form onSubmit={handleUpdateProfile} className="w-full max-w-lg">
-                  <div className="mb-4">
-                    <label htmlFor="name" className="block text-gray-700">Name</label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="mt-1 p-2 w-full border rounded"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label htmlFor="email" className="block text-gray-700">Email</label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="mt-1 p-2 w-full border rounded"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label htmlFor="phone" className="block text-gray-700">Phone</label>
-                    <input
-                      type="text"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="mt-1 p-2 w-full border rounded"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label htmlFor="address" className="block text-gray-700">Address</label>
-                    <input
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      className="mt-1 p-2 w-full border rounded"
-                    />
-                  </div>
-                  <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Update Profile</button>
-                  <button type="button" onClick={() => setEditMode(false)} className="ml-4 bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
-                </form>
+                <AddressForm
+                  formData={formData}
+                  handleInputChange={handleInputChange}
+                  handleUpdateProfile={handleUpdateProfile}
+                  setEditMode={setEditMode}
+                />
               </div>
             ) : (
               <div className="flex flex-col items-left justify-center pl-10 pt-10 pb-5 mb-4 border border-gray-100 pt-3 rounded pb-10">
-                <p><span className='font-medium text-lg'>Name: </span>{userData.name}</p>
-                <p><span className='font-medium text-lg'>Email: </span>{userData.email}</p>
-                <p><span className='font-medium text-lg'>Occupation: </span>{userData.occupation}</p>
-                <p><span className='font-medium text-lg'>Phone: </span>{userData.phone}</p>
-                <p><span className='font-medium text-lg'>Address: </span>{`${userData.address.street}, ${userData.address.city}, ${userData.address.state}, ${userData.address.zip}, ${userData.address.country}`}</p>
+                <p><span className='font-medium text-lg'>Name: </span>{userData?.name}</p>
+                <p><span className='font-medium text-lg'>Email: </span>{userData?.email}</p>
+                <p><span className='font-medium text-lg'>Occupation: </span>{userData?.occupation}</p>
+                <p><span className='font-medium text-lg'>Phone: </span>{userData?.phone}</p>
+                <p><span className='font-medium text-lg'>Address: </span>{`${userData?.address?.street || ''}, ${userData?.address?.city || ''}, ${userData?.address?.state || ''}, ${userData?.address?.zipCode || ''}, ${userData?.address?.country || ''}`}</p>
                 <button onClick={() => setEditMode(true)} className="w-[30%] bg-blue-400 text-white px-4 py-2 rounded mt-4">Edit Profile</button>
                 <button onClick={handleChangePassword} className="w-[30%] bg-red-400 text-white px-4 py-2 rounded mt-4">Change Password</button>
               </div>
             )}
             <div className="mt-8 flex flex-col items-left justify-center pl-10 pt-10 pb-5 mb-4 border border-gray-100 rounded">
               <h2 className="text-xl font-bold mb-4">Applied Jobs</h2>
-              {userData.appliedJobs.length > 0 ? (
+              {userData?.appliedJobs?.length > 0 ? (
                 <ul>
                   {userData.appliedJobs.map((job: any) => (
                     <li key={defaultJobKey()} className="mb-4">
@@ -334,56 +407,41 @@ const ProfilePage: React.FC = () => {
                 <p>No jobs applied yet.</p>
               )}
             </div>
-            <div className="mt-8 pl-10">
-              <h2 className="text-xl font-bold mb-4">Upload CV</h2>
-              <input type="file" name="cv" onChange={handleFileChange} className="mt-2" />
-              <button onClick={handleUploadCv} className="bg-blue-400 text-white px-4 py-2 rounded mt-2">Upload CV</button>
-            </div>
+            <CvUpload
+              cv={cv}
+              setCv={setCv}
+              userData={userData}
+              setUserData={setUserData}
+            />
             <div className="mt-8 pl-10">
               <h2 className="text-xl font-bold mb-4">Education</h2>
-              {userData.education.length > 0 ? (
-                <ul>
-                  {userData.education.map((edu: any) => (
-                    <li key={defaultJobKey()} className="mb-4">
-                      <p><span className='font-medium text-lg'>Institution: </span>{edu.institution}</p>
-                      <p><span className='font-medium text-lg'>Degree: </span>{edu.degree}</p>
-                      <p><span className='font-medium text-lg'>Year: </span>{edu.year}</p>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No education details available.</p>
-              )}
+              <EducationForm
+                education={userData.education}
+                handleInputChange={handleEducationInputChange}
+                handleAddEducation={handleAddEducation}
+                handleRemoveEducation={handleRemoveEducation}
+                handleUpdateEducation={handleUpdateEducation}
+              />
             </div>
             <div className="mt-8 pl-10">
               <h2 className="text-xl font-bold mb-4">Experience</h2>
-              {userData.experience.length > 0 ? (
-                <ul>
-                  {userData.experience.map((exp: any) => (
-                    <li key={defaultJobKey()} className="mb-4">
-                      <p><span className='font-medium text-lg'>Company: </span>{exp.company}</p>
-                      <p><span className='font-medium text-lg'>Role: </span>{exp.role}</p>
-                      <p><span className='font-medium text-lg'>Duration: </span>{exp.duration}</p>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No experience details available.</p>
-              )}
+              <ExperienceForm
+                experience={userData.experience}
+                handleInputChange={handleExperienceInputChange}
+                handleAddExperience={handleAddExperience}
+                handleRemoveExperience={handleRemoveExperience}
+                handleUpdateExperience={handleUpdateExperience}
+              />
             </div>
             <div className="mt-8 pl-10">
               <h2 className="text-xl font-bold mb-4">Skills</h2>
-              {userData.skills.length > 0 ? (
-                <ul>
-                  {userData.skills.map((skill: any) => (
-                    <li key={defaultJobKey()} className="mb-4">
-                      <p><span className='font-medium text-lg'>Skill: </span>{skill.name}</p>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No skills available.</p>
-              )}
+              <SkillsForm
+                skills={userData.skills}
+                handleInputChange={handleSkillsInputChange}
+                handleAddSkill={handleAddSkill}
+                handleRemoveSkill={handleRemoveSkill}
+                handleUpdateSkills={handleUpdateSkills}
+              />
             </div>
           </div>
         ) : (

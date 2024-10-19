@@ -1,6 +1,7 @@
 import React from "react";
 import { MapPin } from 'lucide-react';
 import transformTime from "../../utils/FormatTime";
+import { truncateText } from "../../utils/truncateText";
 import { JobType } from "../../pages/Jobs/JobsPage";
 
 interface JobCardProps {
@@ -9,12 +10,11 @@ interface JobCardProps {
 }
 
 const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
+  const truncatedDescription = truncateText(job.description || "", 150); // Truncate to 100 characters
+
   return (
-    <>
     <div className="flex flex-col items-center justify-center p-5 bg-white shadow-md rounded-md cursor-pointer" onClick={() => onClick(job.id!)}>
-      <figure
-        className="w-[30%] flex items-center justify-center rounded mb-4"
-      >
+      <figure className="w-[30%] flex items-center justify-center rounded mb-4">
         <img src={job.company?.logo} alt={job.company?.name}/>
       </figure>
       <div className="job-time flex items-center text-gray-500 text-sm mb-2">
@@ -26,14 +26,13 @@ const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
         {job.position}
       </div>
       <div className="job-company text-gray-700 mb-2">
-        <p>{job.description}</p>
+        <p>{truncatedDescription}</p>
       </div>
       <div className="job-location flex items-center text-gray-500">
         <MapPin className="mr-1" />
         <p>{job.location}</p>
       </div>
     </div>
-    </>
   );
 };
 
