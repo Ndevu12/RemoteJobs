@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { UserDummyJobData } from "../../../DummyData/userJobs";
 import JobForm from "../../components/Froms/JobForm";
 import { Job } from "../../lib/job";
 import { truncateText } from "../../utils/truncateText";
+import { jwtDecode } from "jwt-decode";
 
 const API_BASE_URL = (import.meta as any).env.VITE_REACT_APP_API_BASE_URL;
 
@@ -20,12 +20,8 @@ export type ArrayKeys =
 const UserJobsPage: React.FC = () => {
   const { isLoggedIn } = useAuth();
   const [activeTab, setActiveTab] = useState("postedJobs");
-  const [jobs, setJobs] = useState<Job[]>(UserDummyJobData);
-  const [appliedJobs, setAppliedJobs] = useState<Job[]>(
-    UserDummyJobData.filter(
-      (job) => job.AppliedJobs && job.AppliedJobs.length > 0
-    )
-  );
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [appliedJobs, setAppliedJobs] = useState<Job[]>([]);
   const [newJob, setNewJob] = useState<Job>({
     position: "",
     description: "",
@@ -45,6 +41,7 @@ const UserJobsPage: React.FC = () => {
     benefits: { content: "", items: [""] },
     role: { content: "", items: [""] },
   });
+  const [appliedJobsDetails, setAppliedJobsDetails] = useState<Job[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -66,7 +63,6 @@ const UserJobsPage: React.FC = () => {
           if (response.ok) {
             const data = await response.json();
             setJobs(data.jobs);
-            setAppliedJobs(data.appliedJobs);
           } else {
             toast.error("Failed to fetch jobs");
           }
@@ -78,6 +74,69 @@ const UserJobsPage: React.FC = () => {
 
     fetchJobs();
   }, [isLoggedIn, navigate]);
+
+  const fetchAccountInfo = async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        // Decode the token to get the userId
+        const decodedToken: any = jwtDecode(token);
+        const userId = decodedToken.userId;
+
+        const response = await fetch(`${API_BASE_URL}/account/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const account = (await response.json()).account;
+          const appliedJobs = account.appliedJobs || [];
+          setAppliedJobs(appliedJobs);
+        } else {
+          toast.error("Error fetching account info");
+        }
+      } catch (error) {
+        toast.error("Error fetching account info");
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchAccountInfo();
+  }, []);
+
+  useEffect(() => {
+    const fetchAppliedJobs = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const appliedJobsDetails: Job[] = [];
+          for (const jobId of appliedJobs.map((job) => job.jobId)) {
+            const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+
+            if (response.ok) {
+              const job = await response.json();
+              appliedJobsDetails.push(job.job);
+            } else {
+              toast.error("Failed to fetch applied jobs");
+            }
+          }
+          setAppliedJobsDetails(appliedJobsDetails);
+        } catch (error) {
+          toast.error("Something went wrong, Try again!");
+        }
+      }
+    };
+
+    if (appliedJobs.length > 0) {
+      fetchAppliedJobs();
+    }
+  }, [appliedJobs]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -244,7 +303,7 @@ const UserJobsPage: React.FC = () => {
 
   const handleJobClick = (jobId: string) => {
     navigate(`/jobs/${jobId}`);
-  }
+  };
 
   return (
     <div className="className='mt-7 mb-7 p-6 rounded-lg mx-auto max-w-4xl">
@@ -253,19 +312,29 @@ const UserJobsPage: React.FC = () => {
       <div className="mb-8">
         <div className="flex space-x-4 mb-4">
           <button
-            className={`px-4 py-2 rounded ${activeTab === "postedJobs" ? "bg-blue-400 text-white" : "bg-gray-200"}`}
+            className={`px-4 py-2 rounded ${
+              activeTab === "postedJobs"
+                ? "bg-blue-400 text-white"
+                : "bg-gray-200"
+            }`}
             onClick={() => setActiveTab("postedJobs")}
           >
             Posted Jobs
           </button>
           <button
-            className={`px-4 py-2 rounded ${activeTab === "appliedJobs" ? "bg-blue-400 text-white" : "bg-gray-200"}`}
+            className={`px-4 py-2 rounded ${
+              activeTab === "appliedJobs"
+                ? "bg-blue-400 text-white"
+                : "bg-gray-200"
+            }`}
             onClick={() => setActiveTab("appliedJobs")}
           >
             Applied Jobs
           </button>
           <button
-            className={`px-4 py-2 rounded ${activeTab === "postJob" ? "bg-blue-400 text-white" : "bg-gray-200"}`}
+            className={`px-4 py-2 rounded ${
+              activeTab === "postJob" ? "bg-blue-400 text-white" : "bg-gray-200"
+            }`}
             onClick={() => setActiveTab("postJob")}
           >
             Post New Job
@@ -277,7 +346,11 @@ const UserJobsPage: React.FC = () => {
             {jobs.length > 0 ? (
               <ul>
                 {jobs.map((job) => (
-                  <li key={defaultJobKey()} className="mb-4 border p-4 rounded cursor-pointer" onClick={() => handleJobClick(job._id || '')}>
+                  <li
+                    key={defaultJobKey()}
+                    className="mb-4 border p-4 rounded cursor-pointer"
+                    onClick={() => handleJobClick(job._id || "")}
+                  >
                     <div className="flex items-center rounded mb-4">
                       <img
                         src={job.company.logo}
@@ -314,7 +387,8 @@ const UserJobsPage: React.FC = () => {
                       <strong>Contract:</strong> {job.contract}
                     </p>
                     <p>
-                      <strong>Description:</strong> {truncateText(job.description, 150)}
+                      <strong>Description:</strong>{" "}
+                      {truncateText(job.description, 150)}
                     </p>
                     <p>
                       <strong>Status:</strong> {job.status}
@@ -347,50 +421,50 @@ const UserJobsPage: React.FC = () => {
         {activeTab === "appliedJobs" && (
           <div className="mt-5 mb-7 px-10 pt-5 border border-grey-700 rounded-lg mx-auto max-w-4xl">
             <h2 className="text-xl font-bold mb-4">Applied Jobs</h2>
-            {appliedJobs && appliedJobs.length > 0 ? (
+            {appliedJobsDetails.length > 0 ? (
               <ul>
-                {appliedJobs.map((job) => (
+                {appliedJobsDetails.map((job) => (
                   <li key={job._id} className="mb-4 border p-4 rounded">
                     <div className="flex items-center mb-4">
                       <img
-                        src={job.company.logo}
-                        alt={job.company.name}
+                        src={job?.company?.logo}
+                        alt={job?.company?.name}
                         className="w-16 h-16 mr-4"
-                        style={{ backgroundColor: job.company.logoBackground }}
+                        style={{ backgroundColor: job?.company?.logoBackground }}
                       />
                       <div>
                         <p>
-                          <strong>Company:</strong> {job.company.name}
+                          <strong>Company:</strong> {job?.company?.name}
                         </p>
                         <p>
                           <strong>Website:</strong>{" "}
                           <a
-                            href={job.company.website}
+                            href={job?.company?.website}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            {job.company.website}
+                            {job?.company?.website}
                           </a>
                         </p>
                       </div>
                     </div>
                     <p>
-                      <strong>Title:</strong> {job.position}
+                      <strong>Title:</strong> {job?.position}
                     </p>
                     <p>
-                      <strong>Location:</strong> {job.location}
+                      <strong>Location:</strong> {job?.location}
                     </p>
                     <p>
-                      <strong>Posted At:</strong> {job.postedAt}
+                      <strong>Posted At:</strong> {job?.postedAt}
                     </p>
                     <p>
-                      <strong>Contract:</strong> {job.contract}
+                      <strong>Contract:</strong> {job?.contract}
                     </p>
                     <p>
-                      <strong>Description:</strong> {job.description}
+                      <strong>Description:</strong> { truncateText(job?.description, 150)}
                     </p>
                     <p>
-                      <strong>Status:</strong> {job.status}
+                      <strong>Status:</strong> {job?.status}
                     </p>
                   </li>
                 ))}
