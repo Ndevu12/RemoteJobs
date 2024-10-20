@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { UserDummyJobData } from "../../../DummyData/userJobs";
 import JobForm from "../../components/Froms/JobForm";
 import { Job } from "../../lib/job";
+import { truncateText } from "../../utils/truncateText";
 
 const API_BASE_URL = (import.meta as any).env.VITE_REACT_APP_API_BASE_URL;
 
@@ -225,7 +226,7 @@ const UserJobsPage: React.FC = () => {
           toast.success("Job status updated successfully");
           setJobs(
             jobs.map((job) =>
-              job.id === jobId ? { ...job, status: newStatus } : job
+              job._id === jobId ? { ...job, status: newStatus } : job
             )
           );
         } else {
@@ -240,6 +241,10 @@ const UserJobsPage: React.FC = () => {
   const handleViewApplicants = (jobId: string) => {
     navigate(`/jobs/${jobId}/applicants`);
   };
+
+  const handleJobClick = (jobId: string) => {
+    navigate(`/jobs/${jobId}`);
+  }
 
   return (
     <div className="className='mt-7 mb-7 p-6 rounded-lg mx-auto max-w-4xl">
@@ -272,7 +277,7 @@ const UserJobsPage: React.FC = () => {
             {jobs.length > 0 ? (
               <ul>
                 {jobs.map((job) => (
-                  <li key={defaultJobKey()} className="mb-4 border p-4 rounded">
+                  <li key={defaultJobKey()} className="mb-4 border p-4 rounded cursor-pointer" onClick={() => handleJobClick(job._id || '')}>
                     <div className="flex items-center rounded mb-4">
                       <img
                         src={job.company.logo}
@@ -309,7 +314,7 @@ const UserJobsPage: React.FC = () => {
                       <strong>Contract:</strong> {job.contract}
                     </p>
                     <p>
-                      <strong>Description:</strong> {job.description}
+                      <strong>Description:</strong> {truncateText(job.description, 150)}
                     </p>
                     <p>
                       <strong>Status:</strong> {job.status}
@@ -317,7 +322,7 @@ const UserJobsPage: React.FC = () => {
                     <button
                       onClick={() =>
                         handleJobStatusChange(
-                          job.id!,
+                          job._id!,
                           job.status === "open" ? "closed" : "open"
                         )
                       }
@@ -326,7 +331,7 @@ const UserJobsPage: React.FC = () => {
                       {job.status === "open" ? "Close Job" : "Reopen Job"}
                     </button>
                     <button
-                      onClick={() => handleViewApplicants(job.id!)}
+                      onClick={() => handleViewApplicants(job._id!)}
                       className="bg-green-400 text-white px-4 py-2 rounded mt-2 ml-2"
                     >
                       View Applicants
@@ -345,7 +350,7 @@ const UserJobsPage: React.FC = () => {
             {appliedJobs && appliedJobs.length > 0 ? (
               <ul>
                 {appliedJobs.map((job) => (
-                  <li key={job.id} className="mb-4 border p-4 rounded">
+                  <li key={job._id} className="mb-4 border p-4 rounded">
                     <div className="flex items-center mb-4">
                       <img
                         src={job.company.logo}
