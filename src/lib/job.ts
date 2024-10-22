@@ -1,4 +1,5 @@
 export interface Job {
+  [x: string]: any;
   _id?: string;
   position: string;
   description: string;

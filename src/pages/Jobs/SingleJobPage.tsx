@@ -66,7 +66,7 @@ const SingleJobPage: React.FC = () => {
 
           if (response.ok) {
             const account = (await response.json()).account;
-            const hasApplied = jobData?.AppliedJobs?.some((appliedJob: any) => appliedJob.userId === account.id);
+            const hasApplied = jobData?.appliedJobs?.some((appliedJob: any) => appliedJob.userId === account._id);
             if (hasApplied) {
               setApplyText("Applied");
             }
@@ -150,7 +150,6 @@ const SingleJobPage: React.FC = () => {
     }
     const formData = new FormData();
     formData.append("cv", selectedFile);
-    console.log(formData);
 
     try {
       const response = await fetch(`${API_BASE_URL}/jobs/${jobData._id}/apply/new`, {
