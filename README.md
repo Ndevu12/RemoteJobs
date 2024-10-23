@@ -88,7 +88,7 @@ Once the application is up and running, you can access it at http://localhost:30
 
 - **GET /jobs**: Retrieve a list of job listings.
 - **POST /jobs**: Create a new job listing (company only).
-- **GET /jobs/:id**: Retrieve details of a specific job listing.
+- **GET /job/:id**: Retrieve details of a specific job listing.
 - **PUT /jobs/:id**: Update a job listing (company only).
 - **DELETE /jobs/:id**: Delete a job listing (company only).
 
