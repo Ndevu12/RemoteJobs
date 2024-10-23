@@ -81,23 +81,24 @@ Once the application is up and running, you can access it at http://localhost:30
 
 ### Authentication
 
-**POST /auth/signup**: Register a new user or company.
-**POST /auth/login**: Log in a user or company.
+- **POST /auth/signup**: Register a new user or company.
+- **POST /auth/login**: Log in a user or company.
 
 ### Jobs
 
-**GET /jobs**: Retrieve a list of job listings.
-**POST /jobs**: Create a new job listing (company only).
-**GET /jobs/:id**: Retrieve details of a specific job listing.
-**PUT /jobs/:id**: Update a job listing (company only).
-**DELETE /jobs/:id**: Delete a job listing (company only).
+- **GET /jobs**: Retrieve a list of job listings.
+- **POST /jobs**: Create a new job listing (company only).
+- **GET /jobs/:id**: Retrieve details of a specific job listing.
+- **PUT /jobs/:id**: Update a job listing (company only).
+- **DELETE /jobs/:id**: Delete a job listing (company only).
 
 
 ## Applications
 
-**POST /applications**: Apply for a job (user only).
-**GET /applications**: Retrieve a list of applications (user only).
-**GET /applications/:id**: Retrieve details of a specific application (user only).
+- **POST /apply/new**: Apply for a job (user only) with a new CV.
+- **POST /apply/exis**: Apply for a job (user only) with the existing CV.
+- **GET /applications**: Retrieve a list of applications (user only).
+- **GET /applications/:id**: Retrieve details of a specific application (user only).
 
 ## Contributing
 
